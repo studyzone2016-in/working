@@ -41,6 +41,7 @@ input, select, textarea {
 }
 input[readonly] {
   background: #f2f4f8;
+  cursor: pointer;
 }
 button {
   width: 100%;
@@ -53,101 +54,107 @@ button {
   font-size: 15px;
   cursor: pointer;
 }
-.success-message {
-  text-align: center;
-  padding: 26px;
-  background: #e8f5e9;
-  color: #1b5e20;
-  border-radius: 8px;
-  font-size: 15px;
-}
-.home-btn {
-  display: inline-block;
-  margin-top: 14px;
-  padding: 10px 18px;
-  background: #004aad;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 6px;
-}
 </style>
 </head>
 
 <body>
-<div class="container" id="mainBox">
+<div class="container">
 <h1>Enrolment Request</h1>
 
 <form id="enrollForm">
 
-<label>Member Type *</label>
-<select id="memberType" required>
-  <option value="">Select</option>
-  <option>First Time</option>
-  <option>Existing Member</option>
-</select>
+  <label>Member Type *</label>
+  <select id="memberType" name="memberType" required>
+    <option value="">Select</option>
+    <option value="First Time">First Time</option>
+    <option value="Existing Member">Existing Member</option>
+  </select>
 
-<div id="formFields" style="display:none;">
+  <div id="formFields" style="display:none;">
 
-<label>Preferred Branch *</label>
-<select id="branch" required>
-  <option value="">Select</option>
-  <option>Dombivli West</option>
-  <option>Dombivli East (MIDC)</option>
-</select>
+    <label>Full Name *</label>
+    <input type="text" name="name" required>
 
-<label>Preferred Plan *</label>
-<select id="plan" required>
-  <option value="">Select</option>
-  <option>Max Plan – Full Day</option>
-  <option>Light Plan – Morning Slot</option>
-  <option>Light Plan – Afternoon Slot</option>
-  <option>Light Plan – Evening Slot</option>
-  <option>Light flexi Plan - Morning + Afternoon Slot</option>
-  <option>Light flexi Plan - Morning + Evening Slot</option>
-  <option>Light flexi Plan - Afternoon + Evening Slot</option>
-  <option>Weekend - Only Saturday & Sunday</option>
-  <option>Mini Plan - Morning Slot</option>
-  <option>Mini Plan - Evening Slot</option>
-  <option>Single Day Plan - Full Day</option>
-</select>
+    <label>Mobile Number *</label>
+    <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10" required>
 
-<label>Start Date *</label>
-<input type="text" id="startDateDisplay" readonly placeholder="Select Start Date">
-<input type="date" id="startDate" hidden required>
+    <label>Email ID</label>
+    <input type="email" name="email">
 
-<label>No. of Days to Book *</label>
-<input type="number" id="days" min="1" required>
+    <div id="firstTimeOnly">
+      <label>Address *</label>
+      <textarea name="address"></textarea>
 
-<label>End Date</label>
-<input type="text" id="endDate" readonly>
+      <label>City *</label>
+      <input type="text" name="city">
+    </div>
 
-<label>Estimated Cost (₹)</label>
-<input type="text" id="estimatedCost" readonly>
+    <label>Exam Preparing For *</label>
+    <input type="text" name="exam" required>
 
-<label>Registration Fees (₹)</label>
-<input type="text" id="registrationFee" readonly>
+    <label>Preferred Branch *</label>
+    <select id="branch" name="branch" required>
+      <option value="">Select</option>
+      <option>Dombivli West</option>
+      <option>Dombivli East (MIDC)</option>
+    </select>
 
-<label><strong>Grand Estimated Cost (₹)</strong></label>
-<input type="text" id="grandTotal" readonly>
+    <label>Preferred Plan *</label>
+    <select id="plan" name="plan" required>
+      <option value="">Select</option>
+      <option>Max Plan – Full Day</option>
+      <option>Light Plan – Morning Slot</option>
+      <option>Light Plan – Afternoon Slot</option>
+      <option>Light Plan – Evening Slot</option>
+      <option>Light flexi Plan - Morning + Afternoon Slot</option>
+      <option>Light flexi Plan - Morning + Evening Slot</option>
+      <option>Light flexi Plan - Afternoon + Evening Slot</option>
+      <option>Weekend - Only Saturday & Sunday</option>
+      <option>Mini Plan - Morning Slot</option>
+      <option>Mini Plan - Evening Slot</option>
+      <option>Single Day Plan - Full Day</option>
+    </select>
 
-<button type="submit">Submit Subscription Request</button>
-</div>
+    <!-- START DATE (DISPLAY FORMAT dd Mmm YYYY) -->
+    <label>Start Date *</label>
+    <input type="text" id="startDateDisplay" readonly placeholder="Select Start Date">
+    <input type="date" id="startDate" name="startDate" hidden required>
+
+    <label>No. of Days to Book *</label>
+    <input type="number" id="days" name="days" min="1" required>
+
+    <label>End Date</label>
+    <input type="text" id="endDate" name="endDate" readonly>
+
+    <label>Estimated Cost (₹)</label>
+    <input type="text" id="estimatedCost" name="estimatedCost" readonly>
+
+    <label>Registration Fees (₹)</label>
+    <input type="text" id="registrationFee" name="registrationFee" readonly>
+
+    <label><strong>Grand Estimated Cost (₹)</strong></label>
+    <input type="text" id="grandTotal" name="grandTotal" readonly>
+
+    <button type="submit">Submit Subscription Request</button>
+  </div>
 </form>
 </div>
 
 <script>
 const memberType = document.getElementById("memberType");
 const formFields = document.getElementById("formFields");
+const firstTimeOnly = document.getElementById("firstTimeOnly");
+
 const branch = document.getElementById("branch");
 const plan = document.getElementById("plan");
 const startDate = document.getElementById("startDate");
 const startDateDisplay = document.getElementById("startDateDisplay");
 const days = document.getElementById("days");
+
 const endDate = document.getElementById("endDate");
 const estimatedCost = document.getElementById("estimatedCost");
 const registrationFee = document.getElementById("registrationFee");
 const grandTotal = document.getElementById("grandTotal");
-const box = document.getElementById("mainBox");
 
 const priceTable = {
   "Dombivli East (MIDC)": {
@@ -180,70 +187,52 @@ const priceTable = {
 
 memberType.addEventListener("change", () => {
   formFields.style.display = memberType.value ? "block" : "none";
+  firstTimeOnly.style.display = memberType.value === "First Time" ? "block" : "none";
   calculateAll();
 });
 
+[startDate, branch, plan, days].forEach(el =>
+  el.addEventListener("input", calculateAll)
+);
+
+/* Open date picker when display field clicked */
 startDateDisplay.addEventListener("click", () => startDate.showPicker());
 
 startDate.addEventListener("change", () => {
-  startDateDisplay.value = new Date(startDate.value)
-    .toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+  const d = new Date(startDate.value);
+  startDateDisplay.value = d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
   calculateAll();
 });
 
-[branch, plan, days].forEach(el => el.addEventListener("input", calculateAll));
-
 function calculateAll() {
 
-  /* Single Day auto-fix */
-  if (plan.value === "Single Day Plan - Full Day") {
-    days.value = 1;
-    days.readOnly = true;
-  } else {
-    days.readOnly = false;
-  }
+  const unitPrice =
+    priceTable[branch.value]?.[plan.value] || 0;
 
-  /* Validation rules */
-  if (plan.value === "Weekend - Only Saturday & Sunday" && days.value % 30 !== 0) {
-    estimatedCost.value = "";
-    return;
-  }
-
-  if (plan.value !== "Single Day Plan - Full Day" &&
-      plan.value !== "Weekend - Only Saturday & Sunday" &&
-      days.value < 8) {
-    estimatedCost.value = "";
-    return;
-  }
-
-  /* End Date */
   if (startDate.value && days.value) {
     const sd = new Date(startDate.value);
-    sd.setDate(sd.getDate() + Number(days.value) - 1);
-    endDate.value = sd.toLocaleDateString("en-GB",
-      {day:"2-digit",month:"short",year:"numeric"});
+    sd.setDate(sd.getDate() + parseInt(days.value) - 1);
+    endDate.value = sd.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
+  } else {
+    endDate.value = "";
   }
 
-  /* Estimated Cost */
-  const price = priceTable[branch.value]?.[plan.value] || 0;
-  const est = price * (days.value || 0);
+  const est = unitPrice && days.value ? unitPrice * days.value : 0;
   estimatedCost.value = est ? est.toFixed(2) : "";
 
-  const reg = memberType.value === "First Time" ? 175 : 0;
-  registrationFee.value = reg;
-  grandTotal.value = est ? (est + reg).toFixed(2) : "";
-}
+  const regFee = memberType.value === "First Time" ? 175 : 0;
+  registrationFee.value = regFee;
 
-document.getElementById("enrollForm").addEventListener("submit", e => {
-  e.preventDefault();
-  box.innerHTML = `
-    <div class="success-message">
-      ✅ <strong>Thank you!</strong><br><br>
-      Your enrolment request has been received.<br>
-      Our team will contact you shortly.<br>
-      <a href="index.html" class="home-btn">Go to Home Page</a>
-    </div>`;
-});
+  grandTotal.value = est ? (est + regFee).toFixed(2) : "";
+}
 </script>
 </body>
 </html>
