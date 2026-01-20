@@ -41,6 +41,7 @@ input, select, textarea {
 }
 input[readonly] {
   background: #f2f4f8;
+  cursor: pointer;
 }
 button {
   width: 100%;
@@ -57,12 +58,11 @@ button {
 </head>
 
 <body>
-<div class="container" id="mainBox">
+<div class="container">
 <h1>Enrolment Request</h1>
 
 <form id="enrollForm">
 
-  <!-- MEMBER TYPE -->
   <label>Member Type *</label>
   <select id="memberType" name="memberType" required>
     <option value="">Select</option>
@@ -92,7 +92,6 @@ button {
     <label>Exam Preparing For *</label>
     <input type="text" name="exam" required>
 
-    <!-- BRANCH -->
     <label>Preferred Branch *</label>
     <select id="branch" name="branch" required>
       <option value="">Select</option>
@@ -100,7 +99,6 @@ button {
       <option>Dombivli East (MIDC)</option>
     </select>
 
-    <!-- PLAN -->
     <label>Preferred Plan *</label>
     <select id="plan" name="plan" required>
       <option value="">Select</option>
@@ -117,18 +115,16 @@ button {
       <option>Single Day Plan - Full Day</option>
     </select>
 
-    <!-- BOOKING DETAILS -->
+    <!-- START DATE (DISPLAY FORMAT dd Mmm YYYY) -->
     <label>Start Date *</label>
-    <input type="date" id="startDate" name="startDate" required>
+    <input type="text" id="startDateDisplay" readonly placeholder="Select Start Date">
+    <input type="date" id="startDate" name="startDate" hidden required>
 
     <label>No. of Days to Book *</label>
     <input type="number" id="days" name="days" min="1" required>
 
     <label>End Date</label>
     <input type="text" id="endDate" name="endDate" readonly>
-
-    <label>Unit Price (₹ / Day)</label>
-    <input type="text" id="unitPrice" name="unitPrice" readonly>
 
     <label>Estimated Cost (₹)</label>
     <input type="text" id="estimatedCost" name="estimatedCost" readonly>
@@ -152,15 +148,14 @@ const firstTimeOnly = document.getElementById("firstTimeOnly");
 const branch = document.getElementById("branch");
 const plan = document.getElementById("plan");
 const startDate = document.getElementById("startDate");
+const startDateDisplay = document.getElementById("startDateDisplay");
 const days = document.getElementById("days");
 
 const endDate = document.getElementById("endDate");
-const unitPrice = document.getElementById("unitPrice");
 const estimatedCost = document.getElementById("estimatedCost");
 const registrationFee = document.getElementById("registrationFee");
 const grandTotal = document.getElementById("grandTotal");
 
-/* PRICE TABLE */
 const priceTable = {
   "Dombivli East (MIDC)": {
     "Max Plan – Full Day": 94,
@@ -196,20 +191,28 @@ memberType.addEventListener("change", () => {
   calculateAll();
 });
 
-[branch, plan, startDate, days].forEach(el =>
+[startDate, branch, plan, days].forEach(el =>
   el.addEventListener("input", calculateAll)
 );
 
+/* Open date picker when display field clicked */
+startDateDisplay.addEventListener("click", () => startDate.showPicker());
+
+startDate.addEventListener("change", () => {
+  const d = new Date(startDate.value);
+  startDateDisplay.value = d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+  calculateAll();
+});
+
 function calculateAll() {
 
-  /* UNIT PRICE */
-  let price = 0;
-  if (branch.value && plan.value && priceTable[branch.value]?.[plan.value]) {
-    price = priceTable[branch.value][plan.value];
-  }
-  unitPrice.value = price || "";
+  const unitPrice =
+    priceTable[branch.value]?.[plan.value] || 0;
 
-  /* END DATE */
   if (startDate.value && days.value) {
     const sd = new Date(startDate.value);
     sd.setDate(sd.getDate() + parseInt(days.value) - 1);
@@ -222,8 +225,7 @@ function calculateAll() {
     endDate.value = "";
   }
 
-  /* COST CALCULATIONS */
-  const est = price && days.value ? price * days.value : 0;
+  const est = unitPrice && days.value ? unitPrice * days.value : 0;
   estimatedCost.value = est ? est.toFixed(2) : "";
 
   const regFee = memberType.value === "First Time" ? 175 : 0;
