@@ -7,205 +7,213 @@
 
 <style>
 body {
-    margin: 0;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(135deg, #e6f0ff, #f9fbff);
-    color: #003366;
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #e6f0ff, #f9fbff);
+  color: #003366;
 }
-
 .container {
-    max-width: 720px;
-    margin: 15px auto;
-    background: #ffffff;
-    padding: 18px 22px;
-    border-radius: 8px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  max-width: 720px;
+  margin: 15px auto;
+  background: #ffffff;
+  padding: 18px 22px;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
 }
-
 h1 {
-    text-align: center;
-    color: #004aad;
-    font-size: 22px;
-    margin-bottom: 4px;
+  text-align: center;
+  color: #004aad;
+  font-size: 22px;
+  margin-bottom: 4px;
 }
-
 .subtext {
-    text-align: center;
-    font-size: 13px;
-    color: #555;
-    margin-bottom: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 14px;
 }
-
 label {
-    display: block;
-    margin-top: 10px;
-    font-weight: 600;
-    font-size: 13px;
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 13px;
 }
-
 input, select, textarea {
-    width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 13px;
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 13px;
 }
-
 textarea { resize: vertical; }
-
 button {
-    width: 100%;
-    margin-top: 18px;
-    padding: 10px;
-    background: #004aad;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 15px;
-    cursor: pointer;
+  width: 100%;
+  margin-top: 18px;
+  padding: 10px;
+  background: #004aad;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
 }
-
 button:disabled {
-    background: #9bb7e0;
-    cursor: not-allowed;
+  background: #9bb7e0;
+  cursor: not-allowed;
 }
-
 .success-message {
-    text-align: center;
-    padding: 26px;
-    background: #e8f5e9;
-    color: #1b5e20;
-    border-radius: 8px;
-    font-size: 15px;
+  text-align: center;
+  padding: 26px;
+  background: #e8f5e9;
+  color: #1b5e20;
+  border-radius: 8px;
+  font-size: 15px;
 }
-
 .error-message {
-    text-align: center;
-    padding: 18px;
-    background: #ffebee;
-    color: #b71c1c;
-    border-radius: 8px;
-    font-size: 14px;
+  text-align: center;
+  padding: 18px;
+  background: #ffebee;
+  color: #b71c1c;
+  border-radius: 8px;
+  font-size: 14px;
 }
-
 .home-btn {
-    display: inline-block;
-    margin-top: 14px;
-    padding: 10px 18px;
-    background: #004aad;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 6px;
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 18px;
+  background: #004aad;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
 }
 </style>
 </head>
 
 <body>
-
 <div class="container" id="mainBox">
-
 <h1>Enrolment Request</h1>
 <p class="subtext">Submit your request. Our team will confirm seat availability.</p>
 
 <form id="enrollForm">
 
-<label>Full Name *</label>
-<input type="text" name="name" required>
-
-<label>Mobile Number *</label>
-<input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10"
-       inputmode="numeric" placeholder="10-digit mobile number" required>
-
-<label>Email ID</label>
-<input type="email" name="email" placeholder="example@email.com">
-
-<label>Address *</label>
-<textarea name="address" rows="2" required></textarea>
-
-<label>City *</label>
-<input type="text" name="city" required>
-
-<label>Exam Preparing For *</label>
-<input type="text" name="exam" placeholder="NEET, UPSC, CA, JEE" required>
-
-<label>Member Type *</label>
-<select name="memberType" required>
+  <!-- STEP 1 : MEMBER TYPE -->
+  <label>Member Type *</label>
+  <select name="memberType" id="memberType" required>
     <option value="">Select</option>
-    <option>First Time</option>
-    <option>Existing Member</option>
-</select>
+    <option value="First Time">First Time</option>
+    <option value="Existing Member">Existing Member</option>
+  </select>
 
-<label>Preferred Branch *</label>
-<select name="branch" required>
+  <!-- COMMON FIELDS -->
+  <label>Full Name *</label>
+  <input type="text" name="name" required>
+
+  <label>Mobile Number *</label>
+  <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10"
+         inputmode="numeric" placeholder="10-digit mobile number" required>
+
+  <label>Email ID</label>
+  <input type="email" name="email" placeholder="example@email.com">
+
+  <!-- FIRST TIME ONLY -->
+  <div id="firstTimeFields">
+    <label>Address *</label>
+    <textarea name="address" rows="2"></textarea>
+
+    <label>City *</label>
+    <input type="text" name="city">
+  </div>
+
+  <label>Exam Preparing For *</label>
+  <input type="text" name="exam" placeholder="NEET, UPSC, CA, JEE" required>
+
+  <label>Preferred Branch *</label>
+  <select name="branch" required>
     <option value="">Select</option>
     <option>Dombivli West</option>
     <option>Dombivli East (MIDC)</option>
-</select>
+  </select>
 
-<label>Preferred Plan *</label>
-<select name="plan" required>
+  <label>Preferred Plan *</label>
+  <select name="plan" required>
     <option value="">Select</option>
-    <option value="Max Plan – Full Day">Max Plan – Full Day</option>
-    <option value="Light Plan – Morning Slot">Light Plan – Morning Slot</option>
-    <option value="Light Plan – Afternoon Slot">Light Plan – Afternoon Slot</option>
-    <option value="Light Plan – Evening Slot">Light Plan – Evening Slot</option>
-    <option value="Light flexi Plan - Morning + Afternoon Slot">Light flexi Plan - Morning + Afternoon Slot</option>
-    <option value="Light flexi Plan - Morning + Evening Slot">Light flexi Plan - Morning + Evening Slot</option>
-    <option value="Light flexi Plan - Afternoon + Evening Slot">Light flexi Plan - Afternoon + Evening Slot</option>
-    <option value="Weekend - Only Saturday & Sunday">Weekend - Only Saturday & Sunday</option>
-    <option value="Mini Plan - Morning Slot">Mini Plan - Morning Slot</option>
-    <option value="Mini Plan - Evening Slot">Mini Plan - Evening Slot</option>
-    <option value="Single Day Plan - Full Day">Single Day Plan - Full Day</option>
-</select>
+    <option>Max Plan – Full Day</option>
+    <option>Light Plan – Morning Slot</option>
+    <option>Light Plan – Afternoon Slot</option>
+    <option>Light Plan – Evening Slot</option>
+    <option>Light flexi Plan - Morning + Afternoon Slot</option>
+    <option>Light flexi Plan - Morning + Evening Slot</option>
+    <option>Light flexi Plan - Afternoon + Evening Slot</option>
+    <option>Weekend - Only Saturday & Sunday</option>
+    <option>Mini Plan - Morning Slot</option>
+    <option>Mini Plan - Evening Slot</option>
+    <option>Single Day Plan - Full Day</option>
+  </select>
 
-<label>Additional Notes</label>
-<textarea name="notes" rows="2"></textarea>
+  <label>Additional Notes</label>
+  <textarea name="notes" rows="2"></textarea>
 
-<button id="submitBtn" type="submit">Submit Subscription Request</button>
+  <button id="submitBtn" type="submit">Submit Subscription Request</button>
 </form>
-
 </div>
 
 <script>
+const memberType = document.getElementById("memberType");
+const firstTimeFields = document.getElementById("firstTimeFields");
 const form = document.getElementById("enrollForm");
 const btn = document.getElementById("submitBtn");
 const box = document.getElementById("mainBox");
 
+/* Hide first-time fields initially */
+firstTimeFields.style.display = "none";
+
+/* Toggle fields based on member type */
+memberType.addEventListener("change", () => {
+  if (memberType.value === "First Time") {
+    firstTimeFields.style.display = "block";
+    firstTimeFields.querySelectorAll("input, textarea")
+      .forEach(el => el.required = true);
+  } else {
+    firstTimeFields.style.display = "none";
+    firstTimeFields.querySelectorAll("input, textarea")
+      .forEach(el => el.required = false);
+  }
+});
+
+/* Form submit */
 form.addEventListener("submit", function(e){
-    e.preventDefault();
+  e.preventDefault();
+  btn.disabled = true;
+  btn.innerText = "Submitting...";
 
-    btn.disabled = true;
-    btn.innerText = "Submitting...";
-
-    fetch("https://script.google.com/macros/s/AKfycbwF_8R8AKgr2MApLGvStZBlobgcBhVaF2k8K2egOZBCBDPLN5--cPNP4poQ7LiUUGy6sg/exec", {
-        method: "POST",
-        body: new FormData(form)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.status === "success"){
-            box.innerHTML = `
-            <div class="success-message">
-                ✅ <strong>Thank you!</strong><br><br>
-                Your enrolment request has been received.<br>
-                Our team will contact you shortly.<br>
-                <a href="index.html" class="home-btn">Go to Home Page</a>
-            </div>`;
-        } else {
-            throw new Error("Submission failed");
-        }
-    })
-    .catch(() => {
-        btn.disabled = false;
-        btn.innerText = "Submit Subscription Request";
-        box.insertAdjacentHTML("beforeend",
-          `<div class="error-message">
-           ❌ Submission failed. Please retry or contact Study ZONE.
-           </div>`);
-    });
+  fetch("https://script.google.com/macros/s/AKfycbwF_8R8AKgr2MApLGvStZBlobgcBhVaF2k8K2egOZBCBDPLN5--cPNP4poQ7LiUUGy6sg/exec", {
+    method: "POST",
+    body: new FormData(form)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.status === "success"){
+      box.innerHTML = `
+        <div class="success-message">
+          ✅ <strong>Thank you!</strong><br><br>
+          Your enrolment request has been received.<br>
+          Our team will contact you shortly.<br>
+          <a href="index.html" class="home-btn">Go to Home Page</a>
+        </div>`;
+    } else {
+      throw new Error("Failed");
+    }
+  })
+  .catch(() => {
+    btn.disabled = false;
+    btn.innerText = "Submit Subscription Request";
+    box.insertAdjacentHTML("beforeend",
+      `<div class="error-message">
+        ❌ Submission failed. Please retry or contact Study ZONE.
+      </div>`);
+  });
 });
 </script>
-
 </body>
 </html>
