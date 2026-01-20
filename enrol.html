@@ -99,89 +99,97 @@ button:disabled {
 
   <!-- STEP 1 : MEMBER TYPE -->
   <label>Member Type *</label>
-  <select name="memberType" id="memberType" required>
+  <select id="memberType" name="memberType" required>
     <option value="">Select</option>
     <option value="First Time">First Time</option>
     <option value="Existing Member">Existing Member</option>
   </select>
 
-  <!-- COMMON FIELDS -->
-  <label>Full Name *</label>
-  <input type="text" name="name" required>
+  <!-- ALL OTHER FIELDS (HIDDEN INITIALLY) -->
+  <div id="formFields" style="display:none;">
 
-  <label>Mobile Number *</label>
-  <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10"
-         inputmode="numeric" placeholder="10-digit mobile number" required>
+    <label>Full Name *</label>
+    <input type="text" name="name" required>
 
-  <label>Email ID</label>
-  <input type="email" name="email" placeholder="example@email.com">
+    <label>Mobile Number *</label>
+    <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10"
+           inputmode="numeric" placeholder="10-digit mobile number" required>
 
-  <!-- FIRST TIME ONLY -->
-  <div id="firstTimeFields">
-    <label>Address *</label>
-    <textarea name="address" rows="2"></textarea>
+    <label>Email ID</label>
+    <input type="email" name="email" placeholder="example@email.com">
 
-    <label>City *</label>
-    <input type="text" name="city">
+    <!-- FIRST TIME ONLY -->
+    <div id="firstTimeOnly">
+      <label>Address *</label>
+      <textarea name="address" rows="2"></textarea>
+
+      <label>City *</label>
+      <input type="text" name="city">
+    </div>
+
+    <label>Exam Preparing For *</label>
+    <input type="text" name="exam" placeholder="NEET, UPSC, CA, JEE" required>
+
+    <label>Preferred Branch *</label>
+    <select name="branch" required>
+      <option value="">Select</option>
+      <option>Dombivli West</option>
+      <option>Dombivli East (MIDC)</option>
+    </select>
+
+    <label>Preferred Plan *</label>
+    <select name="plan" required>
+      <option value="">Select</option>
+      <option>Max Plan – Full Day</option>
+      <option>Light Plan – Morning Slot</option>
+      <option>Light Plan – Afternoon Slot</option>
+      <option>Light Plan – Evening Slot</option>
+      <option>Light flexi Plan - Morning + Afternoon Slot</option>
+      <option>Light flexi Plan - Morning + Evening Slot</option>
+      <option>Light flexi Plan - Afternoon + Evening Slot</option>
+      <option>Weekend - Only Saturday & Sunday</option>
+      <option>Mini Plan - Morning Slot</option>
+      <option>Mini Plan - Evening Slot</option>
+      <option>Single Day Plan - Full Day</option>
+    </select>
+
+    <label>Additional Notes</label>
+    <textarea name="notes" rows="2"></textarea>
+
+    <button id="submitBtn" type="submit">Submit Subscription Request</button>
   </div>
-
-  <label>Exam Preparing For *</label>
-  <input type="text" name="exam" placeholder="NEET, UPSC, CA, JEE" required>
-
-  <label>Preferred Branch *</label>
-  <select name="branch" required>
-    <option value="">Select</option>
-    <option>Dombivli West</option>
-    <option>Dombivli East (MIDC)</option>
-  </select>
-
-  <label>Preferred Plan *</label>
-  <select name="plan" required>
-    <option value="">Select</option>
-    <option>Max Plan – Full Day</option>
-    <option>Light Plan – Morning Slot</option>
-    <option>Light Plan – Afternoon Slot</option>
-    <option>Light Plan – Evening Slot</option>
-    <option>Light flexi Plan - Morning + Afternoon Slot</option>
-    <option>Light flexi Plan - Morning + Evening Slot</option>
-    <option>Light flexi Plan - Afternoon + Evening Slot</option>
-    <option>Weekend - Only Saturday & Sunday</option>
-    <option>Mini Plan - Morning Slot</option>
-    <option>Mini Plan - Evening Slot</option>
-    <option>Single Day Plan - Full Day</option>
-  </select>
-
-  <label>Additional Notes</label>
-  <textarea name="notes" rows="2"></textarea>
-
-  <button id="submitBtn" type="submit">Submit Subscription Request</button>
 </form>
 </div>
 
 <script>
 const memberType = document.getElementById("memberType");
-const firstTimeFields = document.getElementById("firstTimeFields");
-const form = document.getElementById("enrollForm");
-const btn = document.getElementById("submitBtn");
-const box = document.getElementById("mainBox");
+const formFields = document.getElementById("formFields");
+const firstTimeOnly = document.getElementById("firstTimeOnly");
 
-/* Hide first-time fields initially */
-firstTimeFields.style.display = "none";
-
-/* Toggle fields based on member type */
 memberType.addEventListener("change", () => {
+  if (!memberType.value) {
+    formFields.style.display = "none";
+    return;
+  }
+
+  formFields.style.display = "block";
+
   if (memberType.value === "First Time") {
-    firstTimeFields.style.display = "block";
-    firstTimeFields.querySelectorAll("input, textarea")
+    firstTimeOnly.style.display = "block";
+    firstTimeOnly.querySelectorAll("input, textarea")
       .forEach(el => el.required = true);
   } else {
-    firstTimeFields.style.display = "none";
-    firstTimeFields.querySelectorAll("input, textarea")
+    firstTimeOnly.style.display = "none";
+    firstTimeOnly.querySelectorAll("input, textarea")
       .forEach(el => el.required = false);
   }
 });
 
-/* Form submit */
+/* SUBMIT HANDLER */
+const form = document.getElementById("enrollForm");
+const btn = document.getElementById("submitBtn");
+const box = document.getElementById("mainBox");
+
 form.addEventListener("submit", function(e){
   e.preventDefault();
   btn.disabled = true;
@@ -193,7 +201,7 @@ form.addEventListener("submit", function(e){
   })
   .then(res => res.json())
   .then(data => {
-    if(data.status === "success"){
+    if (data.status === "success") {
       box.innerHTML = `
         <div class="success-message">
           ✅ <strong>Thank you!</strong><br><br>
@@ -202,7 +210,7 @@ form.addEventListener("submit", function(e){
           <a href="index.html" class="home-btn">Go to Home Page</a>
         </div>`;
     } else {
-      throw new Error("Failed");
+      throw new Error();
     }
   })
   .catch(() => {
