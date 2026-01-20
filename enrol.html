@@ -24,13 +24,6 @@ h1 {
   text-align: center;
   color: #004aad;
   font-size: 22px;
-  margin-bottom: 4px;
-}
-.subtext {
-  text-align: center;
-  font-size: 13px;
-  color: #555;
-  margin-bottom: 14px;
 }
 label {
   display: block;
@@ -46,7 +39,9 @@ input, select, textarea {
   border: 1px solid #ccc;
   font-size: 13px;
 }
-textarea { resize: vertical; }
+input[readonly] {
+  background: #f2f4f8;
+}
 button {
   width: 100%;
   margin-top: 18px;
@@ -58,46 +53,16 @@ button {
   font-size: 15px;
   cursor: pointer;
 }
-button:disabled {
-  background: #9bb7e0;
-  cursor: not-allowed;
-}
-.success-message {
-  text-align: center;
-  padding: 26px;
-  background: #e8f5e9;
-  color: #1b5e20;
-  border-radius: 8px;
-  font-size: 15px;
-}
-.error-message {
-  text-align: center;
-  padding: 18px;
-  background: #ffebee;
-  color: #b71c1c;
-  border-radius: 8px;
-  font-size: 14px;
-}
-.home-btn {
-  display: inline-block;
-  margin-top: 14px;
-  padding: 10px 18px;
-  background: #004aad;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 6px;
-}
 </style>
 </head>
 
 <body>
 <div class="container" id="mainBox">
 <h1>Enrolment Request</h1>
-<p class="subtext">Submit your request. Our team will confirm seat availability.</p>
 
 <form id="enrollForm">
 
-  <!-- STEP 1 : MEMBER TYPE -->
+  <!-- MEMBER TYPE -->
   <label>Member Type *</label>
   <select id="memberType" name="memberType" required>
     <option value="">Select</option>
@@ -105,30 +70,27 @@ button:disabled {
     <option value="Existing Member">Existing Member</option>
   </select>
 
-  <!-- ALL OTHER FIELDS (HIDDEN INITIALLY) -->
   <div id="formFields" style="display:none;">
 
     <label>Full Name *</label>
     <input type="text" name="name" required>
 
     <label>Mobile Number *</label>
-    <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10"
-           inputmode="numeric" placeholder="10-digit mobile number" required>
+    <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10" required>
 
     <label>Email ID</label>
-    <input type="email" name="email" placeholder="example@email.com">
+    <input type="email" name="email">
 
-    <!-- FIRST TIME ONLY -->
     <div id="firstTimeOnly">
       <label>Address *</label>
-      <textarea name="address" rows="2"></textarea>
+      <textarea name="address"></textarea>
 
       <label>City *</label>
       <input type="text" name="city">
     </div>
 
     <label>Exam Preparing For *</label>
-    <input type="text" name="exam" placeholder="NEET, UPSC, CA, JEE" required>
+    <input type="text" name="exam" required>
 
     <label>Preferred Branch *</label>
     <select name="branch" required>
@@ -142,21 +104,39 @@ button:disabled {
       <option value="">Select</option>
       <option>Max Plan – Full Day</option>
       <option>Light Plan – Morning Slot</option>
-      <option>Light Plan – Afternoon Slot</option>
       <option>Light Plan – Evening Slot</option>
-      <option>Light flexi Plan - Morning + Afternoon Slot</option>
-      <option>Light flexi Plan - Morning + Evening Slot</option>
-      <option>Light flexi Plan - Afternoon + Evening Slot</option>
-      <option>Weekend - Only Saturday & Sunday</option>
-      <option>Mini Plan - Morning Slot</option>
-      <option>Mini Plan - Evening Slot</option>
-      <option>Single Day Plan - Full Day</option>
+      <option>Single Day Plan</option>
     </select>
 
-    <label>Additional Notes</label>
-    <textarea name="notes" rows="2"></textarea>
+    <!-- NEW BOOKING DETAILS -->
+    <label>Start Date *</label>
+    <input type="date" id="startDate" name="startDate" required>
 
-    <button id="submitBtn" type="submit">Submit Subscription Request</button>
+    <label>No. of Days to Book *</label>
+    <select id="days" name="days" required>
+      <option value="">Select</option>
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <option value="15">15</option>
+      <option value="30">30</option>
+    </select>
+
+    <label>End Date</label>
+    <input type="text" id="endDate" name="endDate" readonly>
+
+    <label>Unit Price (₹ per day) *</label>
+    <input type="number" id="unitPrice" name="unitPrice" required>
+
+    <label>Estimated Cost (₹)</label>
+    <input type="text" id="estimatedCost" name="estimatedCost" readonly>
+
+    <label>Registration Fees (₹)</label>
+    <input type="text" id="registrationFee" name="registrationFee" readonly>
+
+    <label><strong>Grand Estimated Cost (₹)</strong></label>
+    <input type="text" id="grandTotal" name="grandTotal" readonly>
+
+    <button type="submit">Submit Subscription Request</button>
   </div>
 </form>
 </div>
@@ -166,62 +146,48 @@ const memberType = document.getElementById("memberType");
 const formFields = document.getElementById("formFields");
 const firstTimeOnly = document.getElementById("firstTimeOnly");
 
+const startDate = document.getElementById("startDate");
+const days = document.getElementById("days");
+const endDate = document.getElementById("endDate");
+const unitPrice = document.getElementById("unitPrice");
+const estimatedCost = document.getElementById("estimatedCost");
+const registrationFee = document.getElementById("registrationFee");
+const grandTotal = document.getElementById("grandTotal");
+
 memberType.addEventListener("change", () => {
-  if (!memberType.value) {
-    formFields.style.display = "none";
-    return;
-  }
-
-  formFields.style.display = "block";
-
-  if (memberType.value === "First Time") {
-    firstTimeOnly.style.display = "block";
-    firstTimeOnly.querySelectorAll("input, textarea")
-      .forEach(el => el.required = true);
-  } else {
-    firstTimeOnly.style.display = "none";
-    firstTimeOnly.querySelectorAll("input, textarea")
-      .forEach(el => el.required = false);
-  }
+  formFields.style.display = memberType.value ? "block" : "none";
+  firstTimeOnly.style.display = memberType.value === "First Time" ? "block" : "none";
+  calculateCosts();
 });
 
-/* SUBMIT HANDLER */
-const form = document.getElementById("enrollForm");
-const btn = document.getElementById("submitBtn");
-const box = document.getElementById("mainBox");
+[startDate, days, unitPrice].forEach(el =>
+  el.addEventListener("input", calculateCosts)
+);
 
-form.addEventListener("submit", function(e){
-  e.preventDefault();
-  btn.disabled = true;
-  btn.innerText = "Submitting...";
+function calculateCosts() {
+  // END DATE
+  if (startDate.value && days.value) {
+    const sd = new Date(startDate.value);
+    sd.setDate(sd.getDate() + parseInt(days.value) - 1);
+    endDate.value = sd.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
+  }
 
-  fetch("https://script.google.com/macros/s/AKfycbwF_8R8AKgr2MApLGvStZBlobgcBhVaF2k8K2egOZBCBDPLN5--cPNP4poQ7LiUUGy6sg/exec", {
-    method: "POST",
-    body: new FormData(form)
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.status === "success") {
-      box.innerHTML = `
-        <div class="success-message">
-          ✅ <strong>Thank you!</strong><br><br>
-          Your enrolment request has been received.<br>
-          Our team will contact you shortly.<br>
-          <a href="index.html" class="home-btn">Go to Home Page</a>
-        </div>`;
-    } else {
-      throw new Error();
-    }
-  })
-  .catch(() => {
-    btn.disabled = false;
-    btn.innerText = "Submit Subscription Request";
-    box.insertAdjacentHTML("beforeend",
-      `<div class="error-message">
-        ❌ Submission failed. Please retry or contact Study ZONE.
-      </div>`);
-  });
-});
+  // COSTS
+  const est = (unitPrice.value && days.value)
+    ? unitPrice.value * days.value
+    : 0;
+
+  estimatedCost.value = est;
+
+  const regFee = memberType.value === "First Time" ? 175 : 0;
+  registrationFee.value = regFee;
+
+  grandTotal.value = est + regFee;
+}
 </script>
 </body>
 </html>
