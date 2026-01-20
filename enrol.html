@@ -41,7 +41,6 @@ input, select, textarea {
 }
 input[readonly] {
   background: #f2f4f8;
-  cursor: pointer;
 }
 button {
   width: 100%;
@@ -56,11 +55,11 @@ button {
 }
 .success {
   text-align: center;
-  padding: 25px;
+  padding: 30px;
 }
 .success a {
   display: inline-block;
-  margin-top: 12px;
+  margin-top: 14px;
   color: #004aad;
   font-weight: 600;
   text-decoration: none;
@@ -151,8 +150,9 @@ button {
 
 <div id="successMessage" class="success" style="display:none;">
   <h2>✅ Thank you!</h2>
-  <p>Your enrolment request has been received.<br>Our team will contact you shortly.</p>
-  <a href="#">Go to Home Page</a>
+  <p>Your enrolment request has been received.<br>
+     Our team will contact you shortly.</p>
+  <a href="index.html">Go to Home Page</a>
 </div>
 
 </div>
@@ -161,13 +161,11 @@ button {
 const memberType = document.getElementById("memberType");
 const formFields = document.getElementById("formFields");
 const firstTimeOnly = document.getElementById("firstTimeOnly");
-
 const branch = document.getElementById("branch");
 const plan = document.getElementById("plan");
 const startDate = document.getElementById("startDate");
 const startDateDisplay = document.getElementById("startDateDisplay");
 const days = document.getElementById("days");
-
 const endDate = document.getElementById("endDate");
 const estimatedCost = document.getElementById("estimatedCost");
 const registrationFee = document.getElementById("registrationFee");
@@ -222,25 +220,36 @@ startDate.onchange = () => {
   calculate();
 };
 
-[branch, plan, days].forEach(el => el.oninput = calculate);
+days.onblur = validateDays;
+[branch, plan].forEach(el => el.onchange = calculate);
 
-function calculate() {
-  const unit = priceTable[branch.value]?.[plan.value] || 0;
+function validateDays() {
   const d = parseInt(days.value || 0);
+  if (!d) return true;
 
   if (plan.value === "Weekend - Only Saturday & Sunday" && d % 30 !== 0) {
     alert("Weekend plan must be booked in multiples of 30 days.");
-    days.value = "";
-    return;
+    days.focus();
+    return false;
   }
 
-  if (plan.value !== "Single Day Plan - Full Day" &&
-      plan.value !== "Weekend - Only Saturday & Sunday" &&
-      d > 0 && d < 8) {
+  if (
+    plan.value !== "Single Day Plan - Full Day" &&
+    plan.value !== "Weekend - Only Saturday & Sunday" &&
+    d < 8
+  ) {
     alert("Minimum 8 days required for this plan.");
-    days.value = "";
-    return;
+    days.focus();
+    return false;
   }
+  return true;
+}
+
+function calculate() {
+  if (!validateDays()) return;
+
+  const unit = priceTable[branch.value]?.[plan.value] || 0;
+  const d = parseInt(days.value || 0);
 
   if (startDate.value && d) {
     const ed = new Date(startDate.value);
@@ -256,6 +265,7 @@ function calculate() {
 
 document.getElementById("enrollForm").onsubmit = e => {
   e.preventDefault();
+  if (!validateDays()) return;
   document.getElementById("enrollForm").style.display = "none";
   document.getElementById("successMessage").style.display = "block";
 };
