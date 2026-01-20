@@ -92,40 +92,43 @@ button {
     <label>Exam Preparing For *</label>
     <input type="text" name="exam" required>
 
+    <!-- BRANCH -->
     <label>Preferred Branch *</label>
-    <select name="branch" required>
+    <select id="branch" name="branch" required>
       <option value="">Select</option>
       <option>Dombivli West</option>
       <option>Dombivli East (MIDC)</option>
     </select>
 
+    <!-- PLAN -->
     <label>Preferred Plan *</label>
-    <select name="plan" required>
+    <select id="plan" name="plan" required>
       <option value="">Select</option>
       <option>Max Plan – Full Day</option>
       <option>Light Plan – Morning Slot</option>
+      <option>Light Plan – Afternoon Slot</option>
       <option>Light Plan – Evening Slot</option>
-      <option>Single Day Plan</option>
+      <option>Light flexi Plan - Morning + Afternoon Slot</option>
+      <option>Light flexi Plan - Morning + Evening Slot</option>
+      <option>Light flexi Plan - Afternoon + Evening Slot</option>
+      <option>Weekend - Only Saturday & Sunday</option>
+      <option>Mini Plan - Morning Slot</option>
+      <option>Mini Plan - Evening Slot</option>
+      <option>Single Day Plan - Full Day</option>
     </select>
 
-    <!-- NEW BOOKING DETAILS -->
+    <!-- BOOKING DETAILS -->
     <label>Start Date *</label>
     <input type="date" id="startDate" name="startDate" required>
 
     <label>No. of Days to Book *</label>
-    <select id="days" name="days" required>
-      <option value="">Select</option>
-      <option value="5">5</option>
-      <option value="10">10</option>
-      <option value="15">15</option>
-      <option value="30">30</option>
-    </select>
+    <input type="number" id="days" name="days" min="1" required>
 
     <label>End Date</label>
     <input type="text" id="endDate" name="endDate" readonly>
 
-    <label>Unit Price (₹ per day) *</label>
-    <input type="number" id="unitPrice" name="unitPrice" required>
+    <label>Unit Price (₹ / Day)</label>
+    <input type="text" id="unitPrice" name="unitPrice" readonly>
 
     <label>Estimated Cost (₹)</label>
     <input type="text" id="estimatedCost" name="estimatedCost" readonly>
@@ -146,26 +149,67 @@ const memberType = document.getElementById("memberType");
 const formFields = document.getElementById("formFields");
 const firstTimeOnly = document.getElementById("firstTimeOnly");
 
+const branch = document.getElementById("branch");
+const plan = document.getElementById("plan");
 const startDate = document.getElementById("startDate");
 const days = document.getElementById("days");
+
 const endDate = document.getElementById("endDate");
 const unitPrice = document.getElementById("unitPrice");
 const estimatedCost = document.getElementById("estimatedCost");
 const registrationFee = document.getElementById("registrationFee");
 const grandTotal = document.getElementById("grandTotal");
 
+/* PRICE TABLE */
+const priceTable = {
+  "Dombivli East (MIDC)": {
+    "Max Plan – Full Day": 94,
+    "Light Plan – Morning Slot": 54,
+    "Light Plan – Afternoon Slot": 54,
+    "Light Plan – Evening Slot": 54,
+    "Light flexi Plan - Morning + Afternoon Slot": 74,
+    "Light flexi Plan - Morning + Evening Slot": 74,
+    "Light flexi Plan - Afternoon + Evening Slot": 74,
+    "Weekend - Only Saturday & Sunday": 66.7,
+    "Mini Plan - Morning Slot": 40,
+    "Mini Plan - Evening Slot": 40,
+    "Single Day Plan - Full Day": 250
+  },
+  "Dombivli West": {
+    "Max Plan – Full Day": 60,
+    "Light Plan – Morning Slot": 40,
+    "Light Plan – Afternoon Slot": 40,
+    "Light Plan – Evening Slot": 40,
+    "Light flexi Plan - Morning + Afternoon Slot": 50,
+    "Light flexi Plan - Morning + Evening Slot": 50,
+    "Light flexi Plan - Afternoon + Evening Slot": 50,
+    "Weekend - Only Saturday & Sunday": 42.7,
+    "Mini Plan - Morning Slot": 25,
+    "Mini Plan - Evening Slot": 25,
+    "Single Day Plan - Full Day": 150
+  }
+};
+
 memberType.addEventListener("change", () => {
   formFields.style.display = memberType.value ? "block" : "none";
   firstTimeOnly.style.display = memberType.value === "First Time" ? "block" : "none";
-  calculateCosts();
+  calculateAll();
 });
 
-[startDate, days, unitPrice].forEach(el =>
-  el.addEventListener("input", calculateCosts)
+[branch, plan, startDate, days].forEach(el =>
+  el.addEventListener("input", calculateAll)
 );
 
-function calculateCosts() {
-  // END DATE
+function calculateAll() {
+
+  /* UNIT PRICE */
+  let price = 0;
+  if (branch.value && plan.value && priceTable[branch.value]?.[plan.value]) {
+    price = priceTable[branch.value][plan.value];
+  }
+  unitPrice.value = price || "";
+
+  /* END DATE */
   if (startDate.value && days.value) {
     const sd = new Date(startDate.value);
     sd.setDate(sd.getDate() + parseInt(days.value) - 1);
@@ -174,19 +218,18 @@ function calculateCosts() {
       month: "short",
       year: "numeric"
     });
+  } else {
+    endDate.value = "";
   }
 
-  // COSTS
-  const est = (unitPrice.value && days.value)
-    ? unitPrice.value * days.value
-    : 0;
-
-  estimatedCost.value = est;
+  /* COST CALCULATIONS */
+  const est = price && days.value ? price * days.value : 0;
+  estimatedCost.value = est ? est.toFixed(2) : "";
 
   const regFee = memberType.value === "First Time" ? 175 : 0;
   registrationFee.value = regFee;
 
-  grandTotal.value = est + regFee;
+  grandTotal.value = est ? (est + regFee).toFixed(2) : "";
 }
 </script>
 </body>
