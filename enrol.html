@@ -54,53 +54,64 @@ button {
   font-size: 15px;
   cursor: pointer;
 }
+.success {
+  text-align: center;
+  padding: 25px;
+}
+.success a {
+  display: inline-block;
+  margin-top: 12px;
+  color: #004aad;
+  font-weight: 600;
+  text-decoration: none;
+}
 </style>
 </head>
 
 <body>
 <div class="container">
+
 <h1>Enrolment Request</h1>
 
 <form id="enrollForm">
 
   <label>Member Type *</label>
-  <select id="memberType" name="memberType" required>
+  <select id="memberType" required>
     <option value="">Select</option>
-    <option value="First Time">First Time</option>
-    <option value="Existing Member">Existing Member</option>
+    <option>First Time</option>
+    <option>Existing Member</option>
   </select>
 
   <div id="formFields" style="display:none;">
 
     <label>Full Name *</label>
-    <input type="text" name="name" required>
+    <input type="text" required>
 
     <label>Mobile Number *</label>
-    <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10" required>
+    <input type="tel" pattern="[0-9]{10}" maxlength="10" required>
 
     <label>Email ID</label>
-    <input type="email" name="email">
+    <input type="email">
 
     <div id="firstTimeOnly">
       <label>Address *</label>
-      <textarea name="address"></textarea>
-
+      <textarea></textarea>
       <label>City *</label>
-      <input type="text" name="city">
+      <input type="text">
     </div>
 
     <label>Exam Preparing For *</label>
-    <input type="text" name="exam" required>
+    <input type="text" required>
 
     <label>Preferred Branch *</label>
-    <select id="branch" name="branch" required>
+    <select id="branch" required>
       <option value="">Select</option>
       <option>Dombivli West</option>
       <option>Dombivli East (MIDC)</option>
     </select>
 
     <label>Preferred Plan *</label>
-    <select id="plan" name="plan" required>
+    <select id="plan" required>
       <option value="">Select</option>
       <option>Max Plan – Full Day</option>
       <option>Light Plan – Morning Slot</option>
@@ -115,29 +126,35 @@ button {
       <option>Single Day Plan - Full Day</option>
     </select>
 
-    <!-- START DATE (DISPLAY FORMAT dd Mmm YYYY) -->
     <label>Start Date *</label>
     <input type="text" id="startDateDisplay" readonly placeholder="Select Start Date">
-    <input type="date" id="startDate" name="startDate" hidden required>
+    <input type="date" id="startDate" hidden required>
 
     <label>No. of Days to Book *</label>
-    <input type="number" id="days" name="days" min="1" required>
+    <input type="number" id="days" min="1" required>
 
     <label>End Date</label>
-    <input type="text" id="endDate" name="endDate" readonly>
+    <input type="text" id="endDate" readonly>
 
     <label>Estimated Cost (₹)</label>
-    <input type="text" id="estimatedCost" name="estimatedCost" readonly>
+    <input type="text" id="estimatedCost" readonly>
 
     <label>Registration Fees (₹)</label>
-    <input type="text" id="registrationFee" name="registrationFee" readonly>
+    <input type="text" id="registrationFee" readonly>
 
     <label><strong>Grand Estimated Cost (₹)</strong></label>
-    <input type="text" id="grandTotal" name="grandTotal" readonly>
+    <input type="text" id="grandTotal" readonly>
 
     <button type="submit">Submit Subscription Request</button>
   </div>
 </form>
+
+<div id="successMessage" class="success" style="display:none;">
+  <h2>✅ Thank you!</h2>
+  <p>Your enrolment request has been received.<br>Our team will contact you shortly.</p>
+  <a href="#">Go to Home Page</a>
+</div>
+
 </div>
 
 <script>
@@ -185,54 +202,64 @@ const priceTable = {
   }
 };
 
-memberType.addEventListener("change", () => {
+memberType.onchange = () => {
   formFields.style.display = memberType.value ? "block" : "none";
   firstTimeOnly.style.display = memberType.value === "First Time" ? "block" : "none";
-  calculateAll();
-});
+};
 
-[startDate, branch, plan, days].forEach(el =>
-  el.addEventListener("input", calculateAll)
-);
+startDateDisplay.onclick = () => startDate.showPicker();
 
-/* Open date picker when display field clicked */
-startDateDisplay.addEventListener("click", () => startDate.showPicker());
+startDate.onchange = () => {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const selected = new Date(startDate.value);
+  if (selected < today) {
+    alert("Past dates are not allowed.");
+    startDate.value = "";
+    startDateDisplay.value = "";
+    return;
+  }
+  startDateDisplay.value = selected.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+  calculate();
+};
 
-startDate.addEventListener("change", () => {
-  const d = new Date(startDate.value);
-  startDateDisplay.value = d.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric"
-  });
-  calculateAll();
-});
+[branch, plan, days].forEach(el => el.oninput = calculate);
 
-function calculateAll() {
+function calculate() {
+  const unit = priceTable[branch.value]?.[plan.value] || 0;
+  const d = parseInt(days.value || 0);
 
-  const unitPrice =
-    priceTable[branch.value]?.[plan.value] || 0;
-
-  if (startDate.value && days.value) {
-    const sd = new Date(startDate.value);
-    sd.setDate(sd.getDate() + parseInt(days.value) - 1);
-    endDate.value = sd.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric"
-    });
-  } else {
-    endDate.value = "";
+  if (plan.value === "Weekend - Only Saturday & Sunday" && d % 30 !== 0) {
+    alert("Weekend plan must be booked in multiples of 30 days.");
+    days.value = "";
+    return;
   }
 
-  const est = unitPrice && days.value ? unitPrice * days.value : 0;
+  if (plan.value !== "Single Day Plan - Full Day" &&
+      plan.value !== "Weekend - Only Saturday & Sunday" &&
+      d > 0 && d < 8) {
+    alert("Minimum 8 days required for this plan.");
+    days.value = "";
+    return;
+  }
+
+  if (startDate.value && d) {
+    const ed = new Date(startDate.value);
+    ed.setDate(ed.getDate() + d - 1);
+    endDate.value = ed.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+  }
+
+  const est = unit * d;
   estimatedCost.value = est ? est.toFixed(2) : "";
-
-  const regFee = memberType.value === "First Time" ? 175 : 0;
-  registrationFee.value = regFee;
-
-  grandTotal.value = est ? (est + regFee).toFixed(2) : "";
+  registrationFee.value = memberType.value === "First Time" ? 175 : 0;
+  grandTotal.value = est ? (est + Number(registrationFee.value)).toFixed(2) : "";
 }
+
+document.getElementById("enrollForm").onsubmit = e => {
+  e.preventDefault();
+  document.getElementById("enrollForm").style.display = "none";
+  document.getElementById("successMessage").style.display = "block";
+};
 </script>
+
 </body>
 </html>
