@@ -217,20 +217,30 @@ function calculate(){
   form["Grand Estimated Cost"].value = grand;
 }
 
+
 form.addEventListener("submit", e => {
   e.preventDefault();
 
-  fetch("https://script.google.com/macros/s/AKfycbx3XAPmWIpsgHSBpD1-im20jfrOomEn2NT9vk9iSLSvk7Lu9cB-KEtsjg1_PNEno0f6IA/exec", {
+  fetch("https://script.google.com/macros/s/AKfycby-stYcFCHWOJWPebMMMnkwPCuw08XJY1CffLiK5P-Octo840UnEK1xJmePS0K6ln1bKA/exec", {
     method: "POST",
     body: new FormData(form)
   })
-  .then(() => {
-    alert("Enrolment submitted successfully");
-    form.reset();
-    mainFields.style.display = "none";
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "success") {
+      alert("Enrolment submitted successfully");
+      form.reset();
+      mainFields.style.display = "none";
+    } else {
+      alert("Server error: " + data.message);
+    }
   })
-  .catch(() => alert("Submission failed"));
+  .catch(err => {
+    console.error(err);
+    alert("Submission failed. Check Apps Script deployment.");
+  });
 });
+
 </script>
 
 </body>
