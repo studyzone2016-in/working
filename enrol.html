@@ -37,8 +37,9 @@ input[readonly]{
   font-size:12px;
 }
 .helper{
-  font-size:11px;
-  color:#666;
+  font-size:12px;
+  color:#444;
+  margin-top:4px;
 }
 button{
   margin-top:18px;
@@ -55,13 +56,6 @@ button{
 }
 .success-box h2{
   color:#1a7f37;
-}
-.success-box a{
-  display:inline-block;
-  margin-top:20px;
-  text-decoration:none;
-  color:#004aad;
-  font-weight:600;
 }
 </style>
 </head>
@@ -129,7 +123,7 @@ button{
 
 <label>Start Date *</label>
 <input type="date" id="startDate" name="Start Date" required>
-<div class="helper">Ex: 22 Jan 2026</div>
+<div id="startDateFormatted" class="helper"></div>
 
 <label>No. of Days to Book *</label>
 <input type="number" id="days" name="No. of Days to Book" required>
@@ -161,7 +155,11 @@ button{
   <h2>✅ Thank you!</h2>
   <p>Your enrolment request has been received.<br>
      Our team will contact you shortly.</p>
-  <a href="index.html">Go to Home Page</a>
+
+  <!-- ✅ FIXED REDIRECTION -->
+  <button type="button" onclick="window.location.href='index.html'">
+    Go to Home Page
+  </button>
 </div>
 
 </div>
@@ -174,6 +172,7 @@ const mobileError = document.getElementById("mobileError");
 const branch = document.getElementById("branch");
 const plan = document.getElementById("plan");
 const startDate = document.getElementById("startDate");
+const startDateFormatted = document.getElementById("startDateFormatted");
 const days = document.getElementById("days");
 const daysError = document.getElementById("daysError");
 const form = document.getElementById("enrollForm");
@@ -183,6 +182,14 @@ startDate.min = new Date().toISOString().split("T")[0];
 function formatDate(d){
   return d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 }
+
+startDate.addEventListener("change", () => {
+  if(startDate.value){
+    startDateFormatted.textContent = formatDate(new Date(startDate.value));
+  } else {
+    startDateFormatted.textContent = "";
+  }
+});
 
 mobile.addEventListener("input", () => {
   mobile.value = mobile.value.replace(/\D/g,'');
@@ -204,22 +211,15 @@ function calculate(){
 
   const d = Number(days.value);
 
-  // ✅ SINGLE DAY PLAN RULE (FIXED)
-  if(plan.value === "Single Day Plan - Full Day"){
-    if(d !== 1){
-      daysError.textContent = "Single Day Plan allows only 1 day booking";
-      return;
-    }
+  if(plan.value === "Single Day Plan - Full Day" && d !== 1){
+    daysError.textContent = "Single Day Plan allows only 1 day booking";
+    return;
   }
-  // ✅ WEEKEND RULE
-  else if(plan.value === "Weekend - Only Saturday & Sunday"){
-    if(d % 30 !== 0){
-      daysError.textContent = "Weekend plan allows only multiples of 30 days (30, 60, 90...)";
-      return;
-    }
+  else if(plan.value === "Weekend - Only Saturday & Sunday" && d % 30 !== 0){
+    daysError.textContent = "Weekend plan allows only multiples of 30 days";
+    return;
   }
-  // ✅ MINIMUM 8 DAYS RULE
-  else if(d < 8){
+  else if(plan.value !== "Single Day Plan - Full Day" && d < 8){
     daysError.textContent = "Minimum booking is 8 days";
     return;
   }
@@ -278,7 +278,7 @@ form.addEventListener("submit", e => {
     method:"POST",
     body:new FormData(form)
   })
-  .then(()=> {
+  .then(()=>{
     form.style.display="none";
     formTitle.style.display="none";
     successBox.style.display="block";
