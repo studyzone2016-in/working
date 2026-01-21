@@ -6,12 +6,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{font-family:Segoe UI,Arial;background:#eef3ff;margin:0}
-.container{max-width:720px;margin:20px auto;background:#fff;padding:20px;border-radius:8px}
-label{font-weight:600;font-size:13px;margin-top:10px;display:block}
-input,select,textarea{width:100%;padding:8px;margin-top:4px}
-input[readonly]{background:#f3f5f8}
-button{margin-top:18px;padding:10px;width:100%;background:#004aad;color:#fff;border:none}
+body{
+  font-family:Segoe UI, Arial, sans-serif;
+  background:#eef3ff;
+  margin:0;
+}
+.container{
+  max-width:720px;
+  margin:20px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+}
+label{
+  font-weight:600;
+  font-size:13px;
+  margin-top:12px;
+  display:block;
+}
+input, select, textarea{
+  width:100%;
+  padding:8px;
+  margin-top:4px;
+}
+input[readonly]{
+  background:#f3f5f8;
+}
+button{
+  margin-top:18px;
+  padding:12px;
+  width:100%;
+  background:#004aad;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -21,6 +50,7 @@ button{margin-top:18px;padding:10px;width:100%;background:#004aad;color:#fff;bor
 
 <form id="enrollForm">
 
+<!-- MEMBER TYPE -->
 <label>Member Type *</label>
 <select id="memberType" name="Member Type" required>
   <option value="">Select</option>
@@ -28,7 +58,7 @@ button{margin-top:18px;padding:10px;width:100%;background:#004aad;color:#fff;bor
   <option>Existing Member</option>
 </select>
 
-<div id="fields" style="display:none">
+<div id="mainFields" style="display:none">
 
 <label>Full Name *</label>
 <input name="Full Name" required>
@@ -37,13 +67,13 @@ button{margin-top:18px;padding:10px;width:100%;background:#004aad;color:#fff;bor
 <input name="Mobile Number" pattern="[0-9]{10}" maxlength="10" required>
 
 <label>Email ID</label>
-<input name="Email ID" type="email">
+<input type="email" name="Email ID">
 
 <label>Address *</label>
-<textarea name="Address"></textarea>
+<textarea name="Address" required></textarea>
 
 <label>City *</label>
-<input name="City">
+<input name="City" required>
 
 <label>Exam Preparing for *</label>
 <input name="Exam Preparing for" required>
@@ -81,87 +111,118 @@ button{margin-top:18px;padding:10px;width:100%;background:#004aad;color:#fff;bor
 <input type="number" id="days" name="No. of Days to Book" required>
 
 <label>End Date</label>
-<input id="endDateDisplay" readonly>
+<input id="endDateView" readonly>
 
-<label>Estimated Cost</label>
-<input id="estDisplay" readonly>
+<label>Estimated Cost (₹)</label>
+<input id="estView" readonly>
 
-<label>Registration Fees</label>
-<input id="regDisplay" readonly>
+<label>Registration Fees (₹)</label>
+<input id="regView" readonly>
 
-<label>Grand Estimated Cost</label>
-<input id="grandDisplay" readonly>
+<label>Grand Estimated Cost (₹)</label>
+<input id="grandView" readonly>
 
+<!-- HIDDEN FIELDS → WRITE TO SHEET -->
 <input type="hidden" name="Unit Price">
 <input type="hidden" name="End Date">
 <input type="hidden" name="Estimated Cost">
 <input type="hidden" name="Registration Fees">
 <input type="hidden" name="Grand Estimated Cost">
 
-<button type="submit">Submit Subscription Request</button>
+<button type="submit">Submit Enrolment</button>
+
 </div>
 </form>
 </div>
 
 <script>
-const pricing={
-"Dombivli East (MIDC)|Max Plan – Full Day":94,
-"Dombivli East (MIDC)|Light Plan – Morning Slot":54,
-"Dombivli East (MIDC)|Light Plan – Afternoon Slot":54,
-"Dombivli East (MIDC)|Light Plan – Evening Slot":54,
-"Dombivli East (MIDC)|Light flexi Plan - Morning + Afternoon Slot":74,
-"Dombivli East (MIDC)|Light flexi Plan - Morning + Evening Slot":74,
-"Dombivli East (MIDC)|Light flexi Plan - Afternoon + Evening Slot":74,
-"Dombivli East (MIDC)|Weekend - Only Saturday & Sunday":66.7,
-"Dombivli East (MIDC)|Mini Plan - Morning Slot":40,
-"Dombivli East (MIDC)|Mini Plan - Evening Slot":40,
-"Dombivli East (MIDC)|Single Day Plan - Full Day":250,
-"Dombivli West|Max Plan – Full Day":60,
-"Dombivli West|Light Plan – Morning Slot":40,
-"Dombivli West|Light Plan – Afternoon Slot":40,
-"Dombivli West|Light Plan – Evening Slot":40,
-"Dombivli West|Light flexi Plan - Morning + Afternoon Slot":50,
-"Dombivli West|Light flexi Plan - Morning + Evening Slot":50,
-"Dombivli West|Light flexi Plan - Afternoon + Evening Slot":50,
-"Dombivli West|Weekend - Only Saturday & Sunday":42.7,
-"Dombivli West|Mini Plan - Morning Slot":25,
-"Dombivli West|Mini Plan - Evening Slot":25,
-"Dombivli West|Single Day Plan - Full Day":150
+const pricing = {
+  "Dombivli East (MIDC)|Max Plan – Full Day":94,
+  "Dombivli East (MIDC)|Light Plan – Morning Slot":54,
+  "Dombivli East (MIDC)|Light Plan – Afternoon Slot":54,
+  "Dombivli East (MIDC)|Light Plan – Evening Slot":54,
+  "Dombivli East (MIDC)|Light flexi Plan - Morning + Afternoon Slot":74,
+  "Dombivli East (MIDC)|Light flexi Plan - Morning + Evening Slot":74,
+  "Dombivli East (MIDC)|Light flexi Plan - Afternoon + Evening Slot":74,
+  "Dombivli East (MIDC)|Weekend - Only Saturday & Sunday":66.7,
+  "Dombivli East (MIDC)|Mini Plan - Morning Slot":40,
+  "Dombivli East (MIDC)|Mini Plan - Evening Slot":40,
+  "Dombivli East (MIDC)|Single Day Plan - Full Day":250,
+
+  "Dombivli West|Max Plan – Full Day":60,
+  "Dombivli West|Light Plan – Morning Slot":40,
+  "Dombivli West|Light Plan – Afternoon Slot":40,
+  "Dombivli West|Light Plan – Evening Slot":40,
+  "Dombivli West|Light flexi Plan - Morning + Afternoon Slot":50,
+  "Dombivli West|Light flexi Plan - Morning + Evening Slot":50,
+  "Dombivli West|Light flexi Plan - Afternoon + Evening Slot":50,
+  "Dombivli West|Weekend - Only Saturday & Sunday":42.7,
+  "Dombivli West|Mini Plan - Morning Slot":25,
+  "Dombivli West|Mini Plan - Evening Slot":25,
+  "Dombivli West|Single Day Plan - Full Day":150
 };
 
-memberType.onchange=()=>fields.style.display=memberType.value?"block":"none";
-startDate.min=new Date().toISOString().split("T")[0];
+const form = document.getElementById("enrollForm");
+const fields = document.getElementById("mainFields");
 
+memberType.onchange = () => {
+  fields.style.display = memberType.value ? "block" : "none";
+  calculate();
+};
+
+startDate.min = new Date().toISOString().split("T")[0];
 ["branch","plan","days","startDate","memberType"].forEach(id=>{
- document.getElementById(id).onchange=calc;
+  document.getElementById(id).onchange = calculate;
 });
 
-function calc(){
- if(!branch.value||!plan.value||!days.value||!startDate.value)return;
- const d=+days.value;
- if(plan.value.includes("Weekend")&&d%30!==0){alert("Weekend plan must be multiple of 30");return;}
- if(!plan.value.includes("Weekend")&&!plan.value.includes("Single Day")&&d<8){alert("Minimum 8 days required");return;}
+function calculate(){
+  if(!branch.value || !plan.value || !days.value || !startDate.value) return;
 
- const price=pricing[`${branch.value}|${plan.value}`];
- const s=new Date(startDate.value);const e=new Date(s);e.setDate(s.getDate()+d-1);
- const est=price*d;const reg=memberType.value==="First Time"?175:0;
+  const d = Number(days.value);
+  const price = pricing[`${branch.value}|${plan.value}`];
+  if(!price) return;
 
- endDateDisplay.value=e.toISOString().split("T")[0];
- estDisplay.value=est;
- regDisplay.value=reg;
- grandDisplay.value=est+reg;
+  if(plan.value.includes("Weekend") && d % 30 !== 0){
+    alert("Weekend plans must be booked in multiples of 30 days");
+    return;
+  }
+  if(!plan.value.includes("Weekend") && !plan.value.includes("Single Day") && d < 8){
+    alert("Minimum booking is 8 days");
+    return;
+  }
 
- enrollForm["Unit Price"].value=price;
- enrollForm["End Date"].value=endDateDisplay.value;
- enrollForm["Estimated Cost"].value=est;
- enrollForm["Registration Fees"].value=reg;
- enrollForm["Grand Estimated Cost"].value=est+reg;
+  const start = new Date(startDate.value);
+  const end = new Date(start);
+  end.setDate(start.getDate() + d - 1);
+
+  const est = price * d;
+  const reg = memberType.value === "First Time" ? 175 : 0;
+  const grand = est + reg;
+
+  endDateView.value = end.toISOString().split("T")[0];
+  estView.value = est;
+  regView.value = reg;
+  grandView.value = grand;
+
+  form["Unit Price"].value = price;
+  form["End Date"].value = endDateView.value;
+  form["Estimated Cost"].value = est;
+  form["Registration Fees"].value = reg;
+  form["Grand Estimated Cost"].value = grand;
 }
 
-enrollForm.onsubmit=e=>{
- e.preventDefault();
- fetch("YOUR_DEPLOYED_SCRIPT_URL",{method:"POST",body:new FormData(enrollForm)})
- .then(()=>alert("Enrolment submitted successfully"));
+form.onsubmit = e => {
+  e.preventDefault();
+
+  fetch("https://script.google.com/macros/s/AKfycbx3XAPmWIpsgHSBpD1-im20jfrOomEn2NT9vk9iSLSvk7Lu9cB-KEtsjg1_PNEno0f6IA/exec", {
+    method: "POST",
+    body: new FormData(form)
+  })
+  .then(() => {
+    alert("Enrolment submitted successfully");
+    form.reset();
+    fields.style.display = "none";
+  });
 };
 </script>
 </body>
