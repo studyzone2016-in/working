@@ -68,11 +68,13 @@ button{
 <label>Email ID</label>
 <input type="email" name="Email ID">
 
+<!-- ADDRESS BLOCK -->
 <div id="addressBlock">
   <label>Address *</label>
   <textarea name="Address"></textarea>
 </div>
 
+<!-- CITY BLOCK -->
 <div id="cityBlock">
   <label>City *</label>
   <input name="City">
@@ -125,6 +127,7 @@ button{
 <label>Grand Estimated Cost (₹)</label>
 <input id="grandView" readonly>
 
+<!-- HIDDEN FOR SHEET -->
 <input type="hidden" name="Unit Price">
 <input type="hidden" name="End Date">
 <input type="hidden" name="Estimated Cost">
@@ -142,25 +145,45 @@ const memberType = document.getElementById("memberType");
 const mainFields = document.getElementById("mainFields");
 const addressBlock = document.getElementById("addressBlock");
 const cityBlock = document.getElementById("cityBlock");
+const branch = document.getElementById("branch");
+const plan = document.getElementById("plan");
 const startDate = document.getElementById("startDate");
+const days = document.getElementById("days");
 const form = document.getElementById("enrollForm");
 
 startDate.min = new Date().toISOString().split("T")[0];
 
-function formatDate(d){
-  return d.toLocaleDateString("en-GB", {
-    day:"2-digit",
-    month:"short",
-    year:"numeric"
-  });
-}
+const pricing = {
+  "Dombivli East (MIDC)|Max Plan – Full Day":94,
+  "Dombivli East (MIDC)|Light Plan – Morning Slot":54,
+  "Dombivli East (MIDC)|Light Plan – Afternoon Slot":54,
+  "Dombivli East (MIDC)|Light Plan – Evening Slot":54,
+  "Dombivli East (MIDC)|Light flexi Plan - Morning + Afternoon Slot":74,
+  "Dombivli East (MIDC)|Light flexi Plan - Morning + Evening Slot":74,
+  "Dombivli East (MIDC)|Light flexi Plan - Afternoon + Evening Slot":74,
+  "Dombivli East (MIDC)|Weekend - Only Saturday & Sunday":66.7,
+  "Dombivli East (MIDC)|Mini Plan - Morning Slot":40,
+  "Dombivli East (MIDC)|Mini Plan - Evening Slot":40,
+  "Dombivli East (MIDC)|Single Day Plan - Full Day":250,
+
+  "Dombivli West|Max Plan – Full Day":60,
+  "Dombivli West|Light Plan – Morning Slot":40,
+  "Dombivli West|Light Plan – Afternoon Slot":40,
+  "Dombivli West|Light Plan – Evening Slot":40,
+  "Dombivli West|Light flexi Plan - Morning + Afternoon Slot":50,
+  "Dombivli West|Light flexi Plan - Morning + Evening Slot":50,
+  "Dombivli West|Light flexi Plan - Afternoon + Evening Slot":50,
+  "Dombivli West|Weekend - Only Saturday & Sunday":42.7,
+  "Dombivli West|Mini Plan - Morning Slot":25,
+  "Dombivli West|Mini Plan - Evening Slot":25,
+  "Dombivli West|Single Day Plan - Full Day":150
+};
 
 memberType.addEventListener("change", () => {
   if(!memberType.value){
     mainFields.style.display = "none";
     return;
   }
-
   mainFields.style.display = "block";
 
   if(memberType.value === "Existing Member"){
@@ -170,14 +193,48 @@ memberType.addEventListener("change", () => {
     addressBlock.style.display = "block";
     cityBlock.style.display = "block";
   }
+  calculate();
 });
 
-startDate.addEventListener("change", () => {
-  if(startDate.value){
-    const d = new Date(startDate.value);
-    startDate.setAttribute("data-display", formatDate(d));
+[branch, plan, startDate, days].forEach(el =>
+  el.addEventListener("change", calculate)
+);
+
+function calculate(){
+  if(!branch.value || !plan.value || !days.value || !startDate.value) return;
+
+  const d = Number(days.value);
+  const unit = pricing[`${branch.value}|${plan.value}`];
+  if(!unit) return;
+
+  if(plan.value.includes("Weekend") && d % 30 !== 0){
+    alert("Weekend plans must be booked in multiples of 30 days");
+    return;
   }
-});
+  if(!plan.value.includes("Weekend") && !plan.value.includes("Single Day") && d < 8){
+    alert("Minimum booking is 8 days");
+    return;
+  }
+
+  const s = new Date(startDate.value);
+  const e = new Date(s);
+  e.setDate(s.getDate() + d - 1);
+
+  const est = unit * d;
+  const reg = memberType.value === "First Time" ? 175 : 0;
+  const grand = est + reg;
+
+  endDateView.value = e.toISOString().split("T")[0];
+  estView.value = est;
+  regView.value = reg;
+  grandView.value = grand;
+
+  form["Unit Price"].value = unit;
+  form["End Date"].value = endDateView.value;
+  form["Estimated Cost"].value = est;
+  form["Registration Fees"].value = reg;
+  form["Grand Estimated Cost"].value = grand;
+}
 
 form.addEventListener("submit", e => {
   e.preventDefault();
