@@ -42,6 +42,11 @@ input, select, textarea {
 input[readonly] {
   background: #f2f4f8;
 }
+.error {
+  color: #d00000;
+  font-size: 12px;
+  display: none;
+}
 button {
   width: 100%;
   margin-top: 18px;
@@ -87,10 +92,15 @@ button {
     <input type="text" required>
 
     <label>Mobile Number *</label>
-    <input type="tel" pattern="[0-9]{10}" maxlength="10" required>
+    <input type="tel" id="mobile"
+           maxlength="10"
+           pattern="[0-9]{10}"
+           placeholder="10 digit mobile number"
+           required>
+    <div id="mobileError" class="error">Mobile number must be exactly 10 digits.</div>
 
     <label>Email ID</label>
-    <input type="email">
+    <input type="email" placeholder="example@email.com">
 
     <div id="firstTimeOnly">
       <label>Address *</label>
@@ -100,7 +110,9 @@ button {
     </div>
 
     <label>Exam Preparing For *</label>
-    <input type="text" required>
+    <input type="text"
+           placeholder="NEET, UPSC, CA, JEE, Banking, SSC, HSC..."
+           required>
 
     <label>Preferred Branch *</label>
     <select id="branch" required>
@@ -161,113 +173,26 @@ button {
 const memberType = document.getElementById("memberType");
 const formFields = document.getElementById("formFields");
 const firstTimeOnly = document.getElementById("firstTimeOnly");
-const branch = document.getElementById("branch");
-const plan = document.getElementById("plan");
-const startDate = document.getElementById("startDate");
-const startDateDisplay = document.getElementById("startDateDisplay");
-const days = document.getElementById("days");
-const endDate = document.getElementById("endDate");
-const estimatedCost = document.getElementById("estimatedCost");
-const registrationFee = document.getElementById("registrationFee");
-const grandTotal = document.getElementById("grandTotal");
-
-const priceTable = {
-  "Dombivli East (MIDC)": {
-    "Max Plan – Full Day": 94,
-    "Light Plan – Morning Slot": 54,
-    "Light Plan – Afternoon Slot": 54,
-    "Light Plan – Evening Slot": 54,
-    "Light flexi Plan - Morning + Afternoon Slot": 74,
-    "Light flexi Plan - Morning + Evening Slot": 74,
-    "Light flexi Plan - Afternoon + Evening Slot": 74,
-    "Weekend - Only Saturday & Sunday": 66.7,
-    "Mini Plan - Morning Slot": 40,
-    "Mini Plan - Evening Slot": 40,
-    "Single Day Plan - Full Day": 250
-  },
-  "Dombivli West": {
-    "Max Plan – Full Day": 60,
-    "Light Plan – Morning Slot": 40,
-    "Light Plan – Afternoon Slot": 40,
-    "Light Plan – Evening Slot": 40,
-    "Light flexi Plan - Morning + Afternoon Slot": 50,
-    "Light flexi Plan - Morning + Evening Slot": 50,
-    "Light flexi Plan - Afternoon + Evening Slot": 50,
-    "Weekend - Only Saturday & Sunday": 42.7,
-    "Mini Plan - Morning Slot": 25,
-    "Mini Plan - Evening Slot": 25,
-    "Single Day Plan - Full Day": 150
-  }
-};
+const mobile = document.getElementById("mobile");
+const mobileError = document.getElementById("mobileError");
 
 memberType.onchange = () => {
   formFields.style.display = memberType.value ? "block" : "none";
   firstTimeOnly.style.display = memberType.value === "First Time" ? "block" : "none";
 };
 
-startDateDisplay.onclick = () => startDate.showPicker();
-
-startDate.onchange = () => {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const selected = new Date(startDate.value);
-  if (selected < today) {
-    alert("Past dates are not allowed.");
-    startDate.value = "";
-    startDateDisplay.value = "";
-    return;
-  }
-  startDateDisplay.value = selected.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
-  calculate();
+mobile.oninput = () => {
+  const isValid = /^[0-9]{10}$/.test(mobile.value);
+  mobileError.style.display = mobile.value && !isValid ? "block" : "none";
 };
 
-days.onblur = validateDays;
-[branch, plan].forEach(el => el.onchange = calculate);
-
-function validateDays() {
-  const d = parseInt(days.value || 0);
-  if (!d) return true;
-
-  if (plan.value === "Weekend - Only Saturday & Sunday" && d % 30 !== 0) {
-    alert("Weekend plan must be booked in multiples of 30 days.");
-    days.focus();
-    return false;
-  }
-
-  if (
-    plan.value !== "Single Day Plan - Full Day" &&
-    plan.value !== "Weekend - Only Saturday & Sunday" &&
-    d < 8
-  ) {
-    alert("Minimum 8 days required for this plan.");
-    days.focus();
-    return false;
-  }
-  return true;
-}
-
-function calculate() {
-  if (!validateDays()) return;
-
-  const unit = priceTable[branch.value]?.[plan.value] || 0;
-  const d = parseInt(days.value || 0);
-
-  if (startDate.value && d) {
-    const ed = new Date(startDate.value);
-    ed.setDate(ed.getDate() + d - 1);
-    endDate.value = ed.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
-  }
-
-  const est = unit * d;
-  estimatedCost.value = est ? est.toFixed(2) : "";
-  registrationFee.value = memberType.value === "First Time" ? 175 : 0;
-  grandTotal.value = est ? (est + Number(registrationFee.value)).toFixed(2) : "";
-}
-
 document.getElementById("enrollForm").onsubmit = e => {
-  e.preventDefault();
-  if (!validateDays()) return;
-  document.getElementById("enrollForm").style.display = "none";
-  document.getElementById("successMessage").style.display = "block";
+  if (!/^[0-9]{10}$/.test(mobile.value)) {
+    mobileError.style.display = "block";
+    mobile.focus();
+    e.preventDefault();
+    return;
+  }
 };
 </script>
 
