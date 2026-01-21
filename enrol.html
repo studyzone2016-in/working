@@ -32,6 +32,10 @@ input, select, textarea{
 input[readonly]{
   background:#f3f5f8;
 }
+.error{
+  color:#d60000;
+  font-size:12px;
+}
 button{
   margin-top:18px;
   padding:12px;
@@ -41,16 +45,30 @@ button{
   border:none;
   cursor:pointer;
 }
+.success-box{
+  text-align:center;
+  padding:40px 20px;
+}
+.success-box h2{
+  color:#1a7f37;
+}
+.success-box a{
+  display:inline-block;
+  margin-top:20px;
+  text-decoration:none;
+  color:#004aad;
+  font-weight:600;
+}
 </style>
 </head>
 
 <body>
 <div class="container">
-<h2>Enrolment Request</h2>
+
+<h2 id="formTitle">Enrolment Request</h2>
 
 <form id="enrollForm">
 
-<!-- MEMBER TYPE -->
 <label>Member Type *</label>
 <select id="memberType" name="Member Type" required>
   <option value="">Select</option>
@@ -64,10 +82,11 @@ button{
 <input name="Full Name" required>
 
 <label>Mobile Number *</label>
-<input name="Mobile Number" pattern="[0-9]{10}" maxlength="10" required>
+<input id="mobile" name="Mobile Number" maxlength="10" required placeholder="10 digit mobile number">
+<div id="mobileError" class="error"></div>
 
 <label>Email ID</label>
-<input type="email" name="Email ID">
+<input type="email" name="Email ID" placeholder="example@email.com">
 
 <label>Address *</label>
 <textarea name="Address" required></textarea>
@@ -76,7 +95,7 @@ button{
 <input name="City" required>
 
 <label>Exam Preparing for *</label>
-<input name="Exam Preparing for" required>
+<input name="Exam Preparing for" required placeholder="NEET, UPSC, CA, JEE, Banking, SSC, HSC...">
 
 <label>Preferred Branch *</label>
 <select id="branch" name="Preferred Branch" required>
@@ -122,7 +141,6 @@ button{
 <label>Grand Estimated Cost (₹)</label>
 <input id="grandView" readonly>
 
-<!-- HIDDEN → SHEET COLUMNS -->
 <input type="hidden" name="Unit Price">
 <input type="hidden" name="End Date">
 <input type="hidden" name="Estimated Cost">
@@ -130,14 +148,23 @@ button{
 <input type="hidden" name="Grand Estimated Cost">
 
 <button type="submit">Submit Subscription Request</button>
-
 </div>
 </form>
+
+<div id="successBox" class="success-box" style="display:none">
+  <h2>✅ Thank you!</h2>
+  <p>Your enrolment request has been received.<br>
+     Our team will contact you shortly.</p>
+  <a href="/">Go to Home Page</a>
+</div>
+
 </div>
 
 <script>
 const memberType = document.getElementById("memberType");
 const mainFields = document.getElementById("mainFields");
+const mobile = document.getElementById("mobile");
+const mobileError = document.getElementById("mobileError");
 const branch = document.getElementById("branch");
 const plan = document.getElementById("plan");
 const startDate = document.getElementById("startDate");
@@ -146,35 +173,23 @@ const form = document.getElementById("enrollForm");
 
 startDate.min = new Date().toISOString().split("T")[0];
 
-const pricing = {
-  "Dombivli East (MIDC)|Max Plan – Full Day":94,
-  "Dombivli East (MIDC)|Light Plan – Morning Slot":54,
-  "Dombivli East (MIDC)|Light Plan – Afternoon Slot":54,
-  "Dombivli East (MIDC)|Light Plan – Evening Slot":54,
-  "Dombivli East (MIDC)|Light flexi Plan - Morning + Afternoon Slot":74,
-  "Dombivli East (MIDC)|Light flexi Plan - Morning + Evening Slot":74,
-  "Dombivli East (MIDC)|Light flexi Plan - Afternoon + Evening Slot":74,
-  "Dombivli East (MIDC)|Weekend - Only Saturday & Sunday":66.7,
-  "Dombivli East (MIDC)|Mini Plan - Morning Slot":40,
-  "Dombivli East (MIDC)|Mini Plan - Evening Slot":40,
-  "Dombivli East (MIDC)|Single Day Plan - Full Day":250,
+function formatDate(d){
+  return d.toLocaleDateString("en-GB", {
+    day:"2-digit", month:"short", year:"numeric"
+  });
+}
 
-  "Dombivli West|Max Plan – Full Day":60,
-  "Dombivli West|Light Plan – Morning Slot":40,
-  "Dombivli West|Light Plan – Afternoon Slot":40,
-  "Dombivli West|Light Plan – Evening Slot":40,
-  "Dombivli West|Light flexi Plan - Morning + Afternoon Slot":50,
-  "Dombivli West|Light flexi Plan - Morning + Evening Slot":50,
-  "Dombivli West|Light flexi Plan - Afternoon + Evening Slot":50,
-  "Dombivli West|Weekend - Only Saturday & Sunday":42.7,
-  "Dombivli West|Mini Plan - Morning Slot":25,
-  "Dombivli West|Mini Plan - Evening Slot":25,
-  "Dombivli West|Single Day Plan - Full Day":150
-};
+mobile.addEventListener("input", () => {
+  mobile.value = mobile.value.replace(/\D/g,'');
+  if(mobile.value.length !== 10){
+    mobileError.textContent = "Mobile number must be exactly 10 digits";
+  } else {
+    mobileError.textContent = "";
+  }
+});
 
 memberType.addEventListener("change", () => {
   mainFields.style.display = memberType.value ? "block" : "none";
-  calculate();
 });
 
 [branch, plan, startDate, days].forEach(el =>
@@ -184,18 +199,33 @@ memberType.addEventListener("change", () => {
 function calculate(){
   if(!branch.value || !plan.value || !days.value || !startDate.value) return;
 
-  const d = Number(days.value);
-  const unit = pricing[`${branch.value}|${plan.value}`];
-  if(!unit) return;
+  const pricing = {
+    "Dombivli East (MIDC)|Max Plan – Full Day":94,
+    "Dombivli East (MIDC)|Light Plan – Morning Slot":54,
+    "Dombivli East (MIDC)|Light Plan – Afternoon Slot":54,
+    "Dombivli East (MIDC)|Light Plan – Evening Slot":54,
+    "Dombivli East (MIDC)|Light flexi Plan - Morning + Afternoon Slot":74,
+    "Dombivli East (MIDC)|Light flexi Plan - Morning + Evening Slot":74,
+    "Dombivli East (MIDC)|Light flexi Plan - Afternoon + Evening Slot":74,
+    "Dombivli East (MIDC)|Weekend - Only Saturday & Sunday":66.7,
+    "Dombivli East (MIDC)|Mini Plan - Morning Slot":40,
+    "Dombivli East (MIDC)|Mini Plan - Evening Slot":40,
+    "Dombivli East (MIDC)|Single Day Plan - Full Day":250,
+    "Dombivli West|Max Plan – Full Day":60,
+    "Dombivli West|Light Plan – Morning Slot":40,
+    "Dombivli West|Light Plan – Afternoon Slot":40,
+    "Dombivli West|Light Plan – Evening Slot":40,
+    "Dombivli West|Light flexi Plan - Morning + Afternoon Slot":50,
+    "Dombivli West|Light flexi Plan - Morning + Evening Slot":50,
+    "Dombivli West|Light flexi Plan - Afternoon + Evening Slot":50,
+    "Dombivli West|Weekend - Only Saturday & Sunday":42.7,
+    "Dombivli West|Mini Plan - Morning Slot":25,
+    "Dombivli West|Mini Plan - Evening Slot":25,
+    "Dombivli West|Single Day Plan - Full Day":150
+  };
 
-  if(plan.value.includes("Weekend") && d % 30 !== 0){
-    alert("Weekend plans must be booked in multiples of 30 days");
-    return;
-  }
-  if(!plan.value.includes("Weekend") && !plan.value.includes("Single Day") && d < 8){
-    alert("Minimum booking is 8 days");
-    return;
-  }
+  const unit = pricing[`${branch.value}|${plan.value}`];
+  const d = Number(days.value);
 
   const s = new Date(startDate.value);
   const e = new Date(s);
@@ -205,42 +235,33 @@ function calculate(){
   const reg = memberType.value === "First Time" ? 175 : 0;
   const grand = est + reg;
 
-  endDateView.value = e.toISOString().split("T")[0];
+  endDateView.value = formatDate(e);
   estView.value = est;
   regView.value = reg;
   grandView.value = grand;
 
   form["Unit Price"].value = unit;
-  form["End Date"].value = endDateView.value;
+  form["End Date"].value = e.toISOString().split("T")[0];
   form["Estimated Cost"].value = est;
   form["Registration Fees"].value = reg;
   form["Grand Estimated Cost"].value = grand;
 }
 
-
 form.addEventListener("submit", e => {
   e.preventDefault();
+  if(mobile.value.length !== 10) return;
 
   fetch("https://script.google.com/macros/s/AKfycby-stYcFCHWOJWPebMMMnkwPCuw08XJY1CffLiK5P-Octo840UnEK1xJmePS0K6ln1bKA/exec", {
     method: "POST",
     body: new FormData(form)
   })
   .then(res => res.json())
-  .then(data => {
-    if (data.status === "success") {
-      alert("Enrolment submitted successfully");
-      form.reset();
-      mainFields.style.display = "none";
-    } else {
-      alert("Server error: " + data.message);
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Submission failed. Check Apps Script deployment.");
+  .then(() => {
+    form.style.display = "none";
+    document.getElementById("formTitle").style.display="none";
+    document.getElementById("successBox").style.display="block";
   });
 });
-
 </script>
 
 </body>
