@@ -36,6 +36,10 @@ input[readonly]{
   color:#d60000;
   font-size:12px;
 }
+.helper{
+  font-size:11px;
+  color:#666;
+}
 button{
   margin-top:18px;
   padding:12px;
@@ -125,9 +129,11 @@ button{
 
 <label>Start Date *</label>
 <input type="date" id="startDate" name="Start Date" required>
+<div class="helper">Ex: 22 Jan 2026</div>
 
 <label>No. of Days to Book *</label>
 <input type="number" id="days" name="No. of Days to Book" required>
+<div id="daysError" class="error"></div>
 
 <label>End Date</label>
 <input id="endDateView" readonly>
@@ -169,23 +175,19 @@ const branch = document.getElementById("branch");
 const plan = document.getElementById("plan");
 const startDate = document.getElementById("startDate");
 const days = document.getElementById("days");
+const daysError = document.getElementById("daysError");
 const form = document.getElementById("enrollForm");
 
 startDate.min = new Date().toISOString().split("T")[0];
 
 function formatDate(d){
-  return d.toLocaleDateString("en-GB", {
-    day:"2-digit", month:"short", year:"numeric"
-  });
+  return d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 }
 
 mobile.addEventListener("input", () => {
   mobile.value = mobile.value.replace(/\D/g,'');
-  if(mobile.value.length !== 10){
-    mobileError.textContent = "Mobile number must be exactly 10 digits";
-  } else {
-    mobileError.textContent = "";
-  }
+  mobileError.textContent =
+    mobile.value.length !== 10 ? "Mobile number must be exactly 10 digits" : "";
 });
 
 memberType.addEventListener("change", () => {
@@ -197,7 +199,26 @@ memberType.addEventListener("change", () => {
 );
 
 function calculate(){
+  daysError.textContent = "";
   if(!branch.value || !plan.value || !days.value || !startDate.value) return;
+
+  const d = Number(days.value);
+
+  // ✅ DAY RULES
+  if(plan.value === "Single Day Plan - Full Day" && d !== 1){
+    daysError.textContent = "Single Day Plan allows only 1 day booking";
+    return;
+  }
+
+  if(plan.value === "Weekend - Only Saturday & Sunday"){
+    if(d % 30 !== 0){
+      daysError.textContent = "Weekend plan allows only multiples of 30 days (30, 60, 90...)";
+      return;
+    }
+  } else if(d < 8){
+    daysError.textContent = "Minimum booking is 8 days";
+    return;
+  }
 
   const pricing = {
     "Dombivli East (MIDC)|Max Plan – Full Day":94,
@@ -225,8 +246,6 @@ function calculate(){
   };
 
   const unit = pricing[`${branch.value}|${plan.value}`];
-  const d = Number(days.value);
-
   const s = new Date(startDate.value);
   const e = new Date(s);
   e.setDate(s.getDate() + d - 1);
@@ -249,17 +268,16 @@ function calculate(){
 
 form.addEventListener("submit", e => {
   e.preventDefault();
-  if(mobile.value.length !== 10) return;
+  if(mobile.value.length !== 10 || daysError.textContent) return;
 
   fetch("https://script.google.com/macros/s/AKfycby-stYcFCHWOJWPebMMMnkwPCuw08XJY1CffLiK5P-Octo840UnEK1xJmePS0K6ln1bKA/exec", {
-    method: "POST",
-    body: new FormData(form)
+    method:"POST",
+    body:new FormData(form)
   })
-  .then(res => res.json())
-  .then(() => {
-    form.style.display = "none";
-    document.getElementById("formTitle").style.display="none";
-    document.getElementById("successBox").style.display="block";
+  .then(()=> {
+    form.style.display="none";
+    formTitle.style.display="none";
+    successBox.style.display="block";
   });
 });
 </script>
