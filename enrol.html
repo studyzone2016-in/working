@@ -122,20 +122,30 @@ button{
 <label>Grand Estimated Cost (₹)</label>
 <input id="grandView" readonly>
 
-<!-- HIDDEN FIELDS → WRITE TO SHEET -->
+<!-- HIDDEN → SHEET COLUMNS -->
 <input type="hidden" name="Unit Price">
 <input type="hidden" name="End Date">
 <input type="hidden" name="Estimated Cost">
 <input type="hidden" name="Registration Fees">
 <input type="hidden" name="Grand Estimated Cost">
 
-<button type="submit">Submit Enrolment</button>
+<button type="submit">Submit Subscription Request</button>
 
 </div>
 </form>
 </div>
 
 <script>
+const memberType = document.getElementById("memberType");
+const mainFields = document.getElementById("mainFields");
+const branch = document.getElementById("branch");
+const plan = document.getElementById("plan");
+const startDate = document.getElementById("startDate");
+const days = document.getElementById("days");
+const form = document.getElementById("enrollForm");
+
+startDate.min = new Date().toISOString().split("T")[0];
+
 const pricing = {
   "Dombivli East (MIDC)|Max Plan – Full Day":94,
   "Dombivli East (MIDC)|Light Plan – Morning Slot":54,
@@ -162,25 +172,21 @@ const pricing = {
   "Dombivli West|Single Day Plan - Full Day":150
 };
 
-const form = document.getElementById("enrollForm");
-const fields = document.getElementById("mainFields");
-
-memberType.onchange = () => {
-  fields.style.display = memberType.value ? "block" : "none";
+memberType.addEventListener("change", () => {
+  mainFields.style.display = memberType.value ? "block" : "none";
   calculate();
-};
-
-startDate.min = new Date().toISOString().split("T")[0];
-["branch","plan","days","startDate","memberType"].forEach(id=>{
-  document.getElementById(id).onchange = calculate;
 });
+
+[branch, plan, startDate, days].forEach(el =>
+  el.addEventListener("change", calculate)
+);
 
 function calculate(){
   if(!branch.value || !plan.value || !days.value || !startDate.value) return;
 
   const d = Number(days.value);
-  const price = pricing[`${branch.value}|${plan.value}`];
-  if(!price) return;
+  const unit = pricing[`${branch.value}|${plan.value}`];
+  if(!unit) return;
 
   if(plan.value.includes("Weekend") && d % 30 !== 0){
     alert("Weekend plans must be booked in multiples of 30 days");
@@ -191,27 +197,27 @@ function calculate(){
     return;
   }
 
-  const start = new Date(startDate.value);
-  const end = new Date(start);
-  end.setDate(start.getDate() + d - 1);
+  const s = new Date(startDate.value);
+  const e = new Date(s);
+  e.setDate(s.getDate() + d - 1);
 
-  const est = price * d;
+  const est = unit * d;
   const reg = memberType.value === "First Time" ? 175 : 0;
   const grand = est + reg;
 
-  endDateView.value = end.toISOString().split("T")[0];
+  endDateView.value = e.toISOString().split("T")[0];
   estView.value = est;
   regView.value = reg;
   grandView.value = grand;
 
-  form["Unit Price"].value = price;
+  form["Unit Price"].value = unit;
   form["End Date"].value = endDateView.value;
   form["Estimated Cost"].value = est;
   form["Registration Fees"].value = reg;
   form["Grand Estimated Cost"].value = grand;
 }
 
-form.onsubmit = e => {
+form.addEventListener("submit", e => {
   e.preventDefault();
 
   fetch("https://script.google.com/macros/s/AKfycbx3XAPmWIpsgHSBpD1-im20jfrOomEn2NT9vk9iSLSvk7Lu9cB-KEtsjg1_PNEno0f6IA/exec", {
@@ -221,9 +227,11 @@ form.onsubmit = e => {
   .then(() => {
     alert("Enrolment submitted successfully");
     form.reset();
-    fields.style.display = "none";
-  });
-};
+    mainFields.style.display = "none";
+  })
+  .catch(() => alert("Submission failed"));
+});
 </script>
+
 </body>
 </html>
