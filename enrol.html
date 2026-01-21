@@ -21,12 +21,12 @@ body{
   box-shadow:0 6px 16px rgba(0,0,0,.1);
 }
 h1{text-align:center;color:#004aad;font-size:22px}
-label{margin-top:10px;display:block;font-weight:600;font-size:13px}
+label{display:block;margin-top:10px;font-weight:600;font-size:13px}
 input,select,textarea{
   width:100%;padding:8px;margin-top:4px;
   border-radius:5px;border:1px solid #ccc;font-size:13px
 }
-input[readonly]{background:#f2f4f8}
+input[readonly]{background:#f3f5f8}
 button{
   width:100%;margin-top:18px;padding:10px;
   background:#004aad;color:#fff;border:none;
@@ -93,6 +93,9 @@ button{
   <option>Single Day Plan - Full Day</option>
 </select>
 
+<label>Any specific requirement or message</label>
+<textarea name="Any specific requirement or message"></textarea>
+
 <label>Start Date *</label>
 <input type="date" id="startDate" name="Start Date" required>
 
@@ -111,17 +114,15 @@ button{
 <label>Grand Estimated Cost (₹)</label>
 <input type="number" id="grandCostDisplay" readonly>
 
-<!-- HIDDEN – EXACT HEADER MATCH -->
+<!-- EXACT HEADER MATCH – HIDDEN -->
 <input type="hidden" name="Unit Price">
 <input type="hidden" name="End Date">
 <input type="hidden" name="Estimated Cost">
 <input type="hidden" name="Registration Fees">
 <input type="hidden" name="Grand Estimated Cost">
 
-<label>Any specific requirement or message</label>
-<textarea name="Any specific requirement or message"></textarea>
-
 <button type="submit">Submit Subscription Request</button>
+
 </div>
 </form>
 </div>
@@ -202,8 +203,10 @@ function calculate(){
 
 enrollForm.addEventListener("submit",e=>{
  e.preventDefault();
- fetch("https://script.google.com/macros/s/AKfycbwF_8R8AKgr2MApLGvStZBlobgcBhVaF2k8K2egOZBCBDPLN5--cPNP4poQ7LiUUGy6sg/exec",
- {method:"POST",body:new FormData(enrollForm)})
+ fetch(
+ "https://script.google.com/macros/s/AKfycbwF_8R8AKgr2MApLGvStZBlobgcBhVaF2k8K2egOZBCBDPLN5--cPNP4poQ7LiUUGy6sg/exec",
+ {method:"POST",body:new FormData(enrollForm)}
+ )
  .then(r=>r.json())
  .then(()=>alert("Enrolment submitted successfully"));
 });
