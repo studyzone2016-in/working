@@ -161,7 +161,7 @@ button{
   <h2>✅ Thank you!</h2>
   <p>Your enrolment request has been received.<br>
      Our team will contact you shortly.</p>
-  <a href="/">Go to Home Page</a>
+  <a href="index.html">Go to Home Page</a>
 </div>
 
 </div>
@@ -204,18 +204,22 @@ function calculate(){
 
   const d = Number(days.value);
 
-  // ✅ DAY RULES
-  if(plan.value === "Single Day Plan - Full Day" && d !== 1){
-    daysError.textContent = "Single Day Plan allows only 1 day booking";
-    return;
+  // ✅ SINGLE DAY PLAN RULE (FIXED)
+  if(plan.value === "Single Day Plan - Full Day"){
+    if(d !== 1){
+      daysError.textContent = "Single Day Plan allows only 1 day booking";
+      return;
+    }
   }
-
-  if(plan.value === "Weekend - Only Saturday & Sunday"){
+  // ✅ WEEKEND RULE
+  else if(plan.value === "Weekend - Only Saturday & Sunday"){
     if(d % 30 !== 0){
       daysError.textContent = "Weekend plan allows only multiples of 30 days (30, 60, 90...)";
       return;
     }
-  } else if(d < 8){
+  }
+  // ✅ MINIMUM 8 DAYS RULE
+  else if(d < 8){
     daysError.textContent = "Minimum booking is 8 days";
     return;
   }
