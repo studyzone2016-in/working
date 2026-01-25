@@ -2,222 +2,188 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Study ZONE – Trusted Since 2016</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Study ZONE | Dashboard</title>
 
 <style>
-/* Modern Professional Palette */
 :root {
-  --primary-dark: #1e3a8a;
-  --accent-blue: #2563eb;
-  --slate-text: #334155;
-  --glass-bg: rgba(255, 255, 255, 0.9);
-  --soft-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --heavy-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --primary: #1e3a8a;
+  --accent: #2563eb;
+  --bg: #f8fafc;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
 body {
-  background: #f0f4f8;
-  background-image: radial-gradient(#d1dcf0 1px, transparent 1px);
-  background-size: 25px 25px; /* Subtle professional grid pattern */
+  background: var(--bg);
   color: #0f172a;
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Prevents scrolling */
+}
+
+.app-canvas {
+  width: 100%;
+  max-width: 850px;
+  height: 95vh;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.container {
-  max-width: 900px;
-  margin: 20px auto;
-}
-
-/* Hero Section: The "Header" */
-.hero {
-  background: var(--primary-dark);
-  color: #ffffff;
-  padding: 40px 20px;
+/* Compact Hero */
+.hero-mini {
+  background: var(--primary);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  color: white;
+  padding: 25px;
   border-radius: 24px;
   text-align: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--heavy-shadow);
-  margin-bottom: 30px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-/* Subtle background glow effect */
-.hero::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.3) 0%, transparent 70%);
-}
-
-.hero h1 {
-  font-size: 2.2rem;
-  font-weight: 800;
-  position: relative;
+.hero-mini h1 {
+  font-size: 1.8rem;
   letter-spacing: 1px;
 }
 
-.hero p {
-  font-size: 0.95rem;
-  margin-top: 8px;
+.hero-mini p {
+  font-size: 0.85rem;
   opacity: 0.9;
-  position: relative;
-  font-weight: 300;
+  margin-top: 4px;
 }
 
-/* Creative Sections Layout */
-.sections {
+/* Grid that fits the remaining height */
+.dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: 15px;
+  flex-grow: 1; /* Fills remaining space */
 }
 
-/* The Card Style */
 .card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: white;
   border-radius: 20px;
-  padding: 25px;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--soft-shadow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--heavy-shadow);
-  border-color: var(--accent-blue);
+  border-color: var(--accent);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* Enrol Card spans both columns at the bottom or top */
+.card.featured {
+  grid-column: span 2;
+  background: #f0f7ff;
+  border: 2px solid var(--accent);
+  text-align: center;
+  padding: 22px;
 }
 
 .card h2 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--primary-dark);
-  margin-bottom: 12px;
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.card p, .card div {
-  font-size: 0.85rem;
-  color: var(--slate-text);
-  line-height: 1.6;
-  flex-grow: 1;
+.card p {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
 }
 
-/* Special Focus for Main Action */
-.card.primary {
-  background: linear-gradient(to bottom right, #ffffff, #eff6ff);
-  border: 2px solid var(--accent-blue);
-}
-
-.card.primary h2 {
-  color: var(--accent-blue);
-}
-
-/* Creative Modern Buttons */
+/* Button Styling */
 .btn {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 12px 24px;
-  border-radius: 14px;
+  display: block;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 12px;
   text-align: center;
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  font-weight: 700;
   background: #e2e8f0;
-  color: var(--primary-dark);
+  color: var(--primary);
+  transition: 0.2s;
 }
 
-.btn:hover {
-  background: #cbd5e1;
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  font-size: 0.9rem;
+  padding: 14px;
 }
 
-/* Action Button Blue */
-.btn-blue {
-  background: var(--accent-blue);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-}
+.btn:active { transform: scale(0.98); }
 
-.btn-blue:hover {
-  background: var(--primary-dark);
-  transform: scale(1.02);
-}
-
-/* Footer Styling */
+/* Footer fix */
 footer {
-  margin-top: 40px;
   text-align: center;
-  font-size: 0.75rem;
-  color: #64748b;
-  letter-spacing: 0.5px;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  padding-top: 5px;
 }
 
+/* Mobile Adjustments */
 @media (max-width: 600px) {
-  .hero h1 { font-size: 1.8rem; }
-  .sections { grid-template-columns: 1fr; }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, auto);
+  }
+  .card.featured { grid-column: span 1; }
+  body { overflow: auto; } /* Allow scroll only on very small phones */
+  .app-canvas { height: auto; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-  <header class="hero">
+<div class="app-canvas">
+  
+  <header class="hero-mini">
     <h1>Study ZONE</h1>
-    <p>Self-Study Reading Rooms · Dombivli</p>
-    <p>Open Daily · 7:00 AM – 10:00 PM · Since 2016</p>
+    <p>Self-Study Reading Rooms · Since 2016</p>
+    <p style="font-size: 0.75rem; font-weight: 300;">Dombivli · Open 7:00 AM – 10:00 PM</p>
   </header>
 
-  <main class="sections">
-
-    <section class="card">
-      <h2>
-        <svg style="width:20px;height:20px" viewBox="0 0 24 24"><path fill="currentColor" d="M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z" /></svg>
-        Study Plans
-      </h2>
-      <p>Choose from flexible plans based on your study time and schedule.</p>
+  <main class="dashboard-grid">
+    
+    <div class="card">
+      <h2>📅 Study Plans</h2>
+      <p>Explore flexible timings and batch slots.</p>
       <a href="subscription.html" class="btn">View Plans</a>
-    </section>
+    </div>
 
-    <section class="card">
-      <h2>
-        <svg style="width:20px;height:20px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2C8.13,2 5,5.13 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9C19,5.13 15.87,2 12,2M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5Z" /></svg>
-        Our Locations
-      </h2>
-      <div style="margin-bottom:4px"><strong>Dombivli West</strong> – Near Station</div>
-      <div><strong>Dombivli East</strong> – Near Pendharkar College</div>
-      <a href="maps.html" class="btn">View Locations</a>
-    </section>
+    <div class="card">
+      <h2>📍 Locations</h2>
+      <p>East (MIDC) & West Branches.</p>
+      <a href="maps.html" class="btn">View Maps</a>
+    </div>
 
-    <section class="card primary">
-      <h2>
-        <svg style="width:20px;height:20px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2L1,7L12,12L23,7L12,2M1,12L12,17L23,12L12,17L1,12M1,17L12,22L23,17L12,22L1,17Z" /></svg>
-        Enrol or Renew
-      </h2>
-      <p>
-        New members can apply for enrolment.<br>
-        Existing members can renew their subscription.
-      </p>
-      <a href="enrol.html" class="btn btn-blue">Enrol / Renew Subscription</a>
-    </section>
+    <div class="card featured">
+      <h2>🎓 Enrol or Renew Subscription</h2>
+      <p>Secure your seat at Study ZONE. New applications and existing renewals are processed here.</p>
+      <a href="enrol.html" class="btn btn-primary">Start Enrolment / Renewal</a>
+    </div>
 
   </main>
 
