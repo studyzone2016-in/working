@@ -6,107 +6,172 @@
 <title>Study ZONE – Trusted Since 2016</title>
 
 <style>
+/* Modern Professional Palette */
+:root {
+  --primary-dark: #1e3a8a;
+  --accent-blue: #2563eb;
+  --slate-text: #334155;
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --soft-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --heavy-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
 body {
-  background: linear-gradient(135deg, #edf3ff, #ffffff);
+  background: #f0f4f8;
+  background-image: radial-gradient(#d1dcf0 1px, transparent 1px);
+  background-size: 25px 25px; /* Subtle professional grid pattern */
   color: #0f172a;
+  min-height: 100vh;
+  padding: 20px;
 }
 
 .container {
-  max-width: 980px;
-  margin: auto;
-  padding: 18px;
+  max-width: 900px;
+  margin: 20px auto;
 }
 
-/* Hero */
+/* Hero Section: The "Header" */
 .hero {
-  background: #1e3a8a;
+  background: var(--primary-dark);
   color: #ffffff;
-  padding: 26px 18px;
-  border-radius: 18px;
+  padding: 40px 20px;
+  border-radius: 24px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--heavy-shadow);
+  margin-bottom: 30px;
+}
+
+/* Subtle background glow effect */
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.3) 0%, transparent 70%);
 }
 
 .hero h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2.2rem;
+  font-weight: 800;
+  position: relative;
+  letter-spacing: 1px;
 }
 
 .hero p {
-  font-size: 0.85rem;
-  margin-top: 6px;
-  opacity: 0.95;
+  font-size: 0.95rem;
+  margin-top: 8px;
+  opacity: 0.9;
+  position: relative;
+  font-weight: 300;
 }
 
-/* Sections */
+/* Creative Sections Layout */
 .sections {
-  margin-top: 18px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
 
-/* Card */
+/* The Card Style */
 .card {
-  background: #f1f5ff;
-  border-radius: 16px;
-  padding: 14px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--soft-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--heavy-shadow);
+  border-color: var(--accent-blue);
 }
 
 .card h2 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #1e3a8a;
-  margin-bottom: 6px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.card p,
-.card div {
-  font-size: 0.75rem;
-  color: #334155;
-  line-height: 1.45;
+.card p, .card div {
+  font-size: 0.85rem;
+  color: var(--slate-text);
+  line-height: 1.6;
+  flex-grow: 1;
 }
 
-/* Highlight main action */
+/* Special Focus for Main Action */
 .card.primary {
-  background: #e0ebff;
-  border: 2px solid #2563eb;
+  background: linear-gradient(to bottom right, #ffffff, #eff6ff);
+  border: 2px solid var(--accent-blue);
 }
 
-/* Button */
+.card.primary h2 {
+  color: var(--accent-blue);
+}
+
+/* Creative Modern Buttons */
 .btn {
-  display: block;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 12px;
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  border-radius: 14px;
   text-align: center;
   text-decoration: none;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  background: #2563eb;
-  color: #ffffff;
+  transition: all 0.2s ease;
+  background: #e2e8f0;
+  color: var(--primary-dark);
 }
 
 .btn:hover {
-  background: #1e40af;
+  background: #cbd5e1;
 }
 
-/* Footer */
+/* Action Button Blue */
+.btn-blue {
+  background: var(--accent-blue);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.btn-blue:hover {
+  background: var(--primary-dark);
+  transform: scale(1.02);
+}
+
+/* Footer Styling */
 footer {
-  margin-top: 18px;
+  margin-top: 40px;
   text-align: center;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: #64748b;
+  letter-spacing: 0.5px;
 }
 
-@media (min-width: 768px) {
-  .hero h1 { font-size: 2.1rem; }
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.8rem; }
+  .sections { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -115,44 +180,47 @@ footer {
 
 <div class="container">
 
-  <!-- Hero -->
-  <div class="hero">
+  <header class="hero">
     <h1>Study ZONE</h1>
     <p>Self-Study Reading Rooms · Dombivli</p>
     <p>Open Daily · 7:00 AM – 10:00 PM · Since 2016</p>
-  </div>
+  </header>
 
-  <!-- Sections -->
-  <div class="sections">
+  <main class="sections">
 
-    <!-- Plans -->
-    <div class="card">
-      <h2>Study Plans</h2>
+    <section class="card">
+      <h2>
+        <svg style="width:20px;height:20px" viewBox="0 0 24 24"><path fill="currentColor" d="M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z" /></svg>
+        Study Plans
+      </h2>
       <p>Choose from flexible plans based on your study time and schedule.</p>
       <a href="subscription.html" class="btn">View Plans</a>
-    </div>
+    </section>
 
-    <!-- Locations -->
-    <div class="card">
-      <h2>Our Locations</h2>
-      <div>Dombivli West – Near Railway Station</div>
-      <div>Dombivli East (MIDC) – Near Pendharkar College</div>
+    <section class="card">
+      <h2>
+        <svg style="width:20px;height:20px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2C8.13,2 5,5.13 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9C19,5.13 15.87,2 12,2M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5Z" /></svg>
+        Our Locations
+      </h2>
+      <div style="margin-bottom:4px"><strong>Dombivli West</strong> – Near Station</div>
+      <div><strong>Dombivli East</strong> – Near Pendharkar College</div>
       <a href="maps.html" class="btn">View Locations</a>
-    </div>
+    </section>
 
-    <!-- Enrol / Renew -->
-    <div class="card primary">
-      <h2>Enrol or Renew</h2>
+    <section class="card primary">
+      <h2>
+        <svg style="width:20px;height:20px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2L1,7L12,12L23,7L12,2M1,12L12,17L23,12L12,17L1,12M1,17L12,22L23,17L12,22L1,17Z" /></svg>
+        Enrol or Renew
+      </h2>
       <p>
         New members can apply for enrolment.<br>
         Existing members can renew their subscription.
       </p>
-      <a href="enrol.html" class="btn">Enrol / Renew Subscription</a>
-    </div>
+      <a href="enrol.html" class="btn btn-blue">Enrol / Renew Subscription</a>
+    </section>
 
-  </div>
+  </main>
 
-  <!-- Footer -->
   <footer>
     © Study ZONE · Quiet · Comfortable · Focused
   </footer>
