@@ -69,7 +69,6 @@ input[readonly] { background: #f8fafc; color: #64748b; font-weight: bold; }
 .error { color: #dc2626; font-size: 12px; margin-top: 4px; font-weight: 500; }
 .helper { font-size: 12px; color: #64748b; margin-top: 4px; }
 
-/* Pricing Summary Box */
 .summary-box {
   background: #f8fafc;
   border: 1px solid var(--border);
@@ -98,7 +97,8 @@ button:hover { opacity: 0.9; }
 button:disabled { background: #94a3b8; cursor: not-allowed; }
 
 .success-box { text-align: center; padding: 40px 20px; }
-.success-box h2 { border: none; color: #16a34a; }
+.success-box h2 { border: none; color: #16a34a; margin-bottom: 10px; }
+.success-box p { color: #64748b; margin-bottom: 30px; }
 
 @media (max-width: 480px) {
   .summary-box { grid-template-columns: 1fr; }
@@ -224,8 +224,8 @@ button:disabled { background: #94a3b8; cursor: not-allowed; }
 
   <div id="successBox" class="success-box" style="display:none">
     <h2>✅ Request Sent!</h2>
-    <p>We have received your enrolment details. Our branch manager will contact you shortly.</p>
-    <button type="button" onclick="location.reload()" style="max-width: 200px; margin-top: 20px; background:#64748b">Submit Another</button>
+    <p>Your enrolment has been recorded successfully.<br>Our team will contact you shortly.</p>
+    <button type="button" onclick="window.location.href='index.html'">Thank You</button>
   </div>
 </div>
 
@@ -253,7 +253,6 @@ function formatDate(d){
   return d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 }
 
-// Logic to show/hide address and main fields
 f.memberType.addEventListener("change", () => {
   const val = f.memberType.value;
   f.mainFields.style.display = val ? "block" : "none";
@@ -267,7 +266,7 @@ f.memberType.addEventListener("change", () => {
     f.addrInput.required = true;
     f.cityInput.required = true;
   }
-  calculate(); // Recalculate reg fees
+  calculate();
 });
 
 f.mobile.addEventListener("input", () => {
@@ -344,9 +343,8 @@ f.form.addEventListener("submit", e => {
   e.preventDefault();
   if(f.mobile.value.length !== 10 || f.daysErr.textContent) return;
 
-  // Visual Speed optimization
   f.btn.disabled = true;
-  f.btn.textContent = "Processing... Wait 2-3 Seconds";
+  f.btn.textContent = "Submitting...";
 
   fetch("https://script.google.com/macros/s/AKfycby-stYcFCHWOJWPebMMMnkwPCuw08XJY1CffLiK5P-Octo840UnEK1xJmePS0K6ln1bKA/exec", {
     method:"POST",
@@ -359,7 +357,7 @@ f.form.addEventListener("submit", e => {
     window.scrollTo(0,0);
   })
   .catch(() => {
-    alert("Connection error. Please check your internet and try again.");
+    alert("Connection error. Please try again.");
     f.btn.disabled = false;
     f.btn.textContent = "Submit Request";
   });
