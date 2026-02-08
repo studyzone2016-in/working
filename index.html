@@ -1,197 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Study ZONE | Dashboard</title>
-
 <style>
-:root {
-  --primary: #1e3a8a;
-  --accent: #2563eb;
-  --bg: #f8fafc;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-}
-
-body {
-  background: var(--bg);
-  color: #0f172a;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden; /* Prevents scrolling */
-}
-
-.app-canvas {
-  width: 100%;
-  max-width: 850px;
-  height: 95vh;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-/* Compact Hero */
-.hero-mini {
-  background: var(--primary);
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  color: white;
-  padding: 25px;
-  border-radius: 24px;
-  text-align: center;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-.hero-mini h1 {
-  font-size: 1.8rem;
-  letter-spacing: 1px;
-}
-
-.hero-mini p {
-  font-size: 0.85rem;
-  opacity: 0.9;
-  margin-top: 4px;
-}
-
-/* Grid that fits the remaining height */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: auto 1fr;
-  gap: 15px;
-  flex-grow: 1; /* Fills remaining space */
-}
-
+/* Updated Card Styles for better scannability */
 .card {
-  background: white;
-  border-radius: 20px;
-  padding: 18px;
+  background: #ffffff; /* White cards on light blue background pop more */
+  border-radius: 16px;
+  padding: 20px;
   border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  transition: all 0.2s ease;
+  justify-content: space-between;
+  transition: transform 0.2s;
 }
 
-.card:hover {
-  border-color: var(--accent);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+/* Make the Primary Card stand out instantly */
+.card.primary {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  transform: scale(1.02); /* Slight lift */
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
 }
 
-/* Enrol Card spans both columns at the bottom or top */
-.card.featured {
-  grid-column: span 2;
-  background: #f0f7ff;
-  border: 2px solid var(--accent);
-  text-align: center;
-  padding: 22px;
+.card.primary h2, .card.primary p {
+  color: #ffffff;
 }
 
+.card.primary .btn {
+  background: #ffffff;
+  color: #2563eb;
+}
+
+/* Typography tweaks */
 .card h2 {
-  font-size: 1rem;
-  color: var(--primary);
-  margin-bottom: 6px;
+  font-size: 1.1rem; /* Slightly larger for quick scanning */
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .card p {
-  font-size: 0.8rem;
-  color: #64748b;
-  line-height: 1.4;
-}
-
-/* Button Styling */
-.btn {
-  display: block;
-  margin-top: 12px;
-  padding: 10px;
-  border-radius: 12px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 700;
-  background: #e2e8f0;
-  color: var(--primary);
-  transition: 0.2s;
-}
-
-.btn-primary {
-  background: var(--accent);
-  color: white;
-  font-size: 0.9rem;
-  padding: 14px;
-}
-
-.btn:active { transform: scale(0.98); }
-
-/* Footer fix */
-footer {
-  text-align: center;
-  font-size: 0.7rem;
-  color: #94a3b8;
-  padding-top: 5px;
-}
-
-/* Mobile Adjustments */
-@media (max-width: 600px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(3, auto);
-  }
-  .card.featured { grid-column: span 1; }
-  body { overflow: auto; } /* Allow scroll only on very small phones */
-  .app-canvas { height: auto; }
+  font-size: 0.85rem;
+  margin-bottom: 15px;
 }
 </style>
-</head>
 
-<body>
+<div class="sections">
+    <div class="card primary">
+      <h2>📝 Enrol / Renew</h2>
+      <p>Quick application for new members or instant renewal for current students.</p>
+      <a href="enrol.html" class="btn">Start Application</a>
+    </div>
 
-<div class="app-canvas">
-  
-  <header class="hero-mini">
-    <h1>Study ZONE</h1>
-    <p>Self-Study Reading Rooms · Since 2016</p>
-    <p style="font-size: 0.75rem; font-weight: 300;">Dombivli · Open 7:00 AM – 10:00 PM</p>
-  </header>
-
-  <main class="dashboard-grid">
-    
     <div class="card">
-      <h2>📅 Study Plans</h2>
-      <p>Explore flexible timings and batch slots.</p>
-      <a href="subscription.html" class="btn">View Plans</a>
+      <h2>⏳ Study Plans</h2>
+      <p>Flexible hourly and monthly slots tailored to your schedule.</p>
+      <a href="subscription.html" class="btn">View Fees</a>
     </div>
 
     <div class="card">
       <h2>📍 Locations</h2>
-      <p>East (MIDC) & West Branches.</p>
-      <a href="maps.html" class="btn">View Maps</a>
+      <p>Convenient spots in Dombivli (West & East/MIDC).</p>
+      <a href="maps.html" class="btn">Find Us</a>
     </div>
-
-    <div class="card featured">
-      <h2>🎓 Enrol or Renew Subscription</h2>
-      <p>Secure your seat at Study ZONE. New applications and existing renewals are processed here.</p>
-      <a href="enrol.html" class="btn btn-primary">Start Enrolment / Renewal</a>
-    </div>
-
-  </main>
-
-  <footer>
-    © Study ZONE · Quiet · Comfortable · Focused
-  </footer>
-
 </div>
-
-</body>
-</html>
